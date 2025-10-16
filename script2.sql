@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS asr_llm_mapping (
 -- Insert sample data into asr_llm_mapping table
 INSERT INTO asr_llm_mapping (op_co, stt_provider, stt_region, stt_key, llm_provider, llm_api, llm_key, tts_provider, tts_api, tts_key, perplexity_api, perplexity_key, perplexity_model, llm_model)
 VALUES
-('ETI_AF', 'azure', 'uaenorth', '7yAOU8Ce9WpRZnuBSBCKtnptzwRsgBwC41dZIFmKRSn34nc4A85xJQQJ99BIACF24PCXJ3w3AAAYACOGvMSy', 'azure', 'https://nexiva-etisalat-af-ai.openai.azure.com/openai/deployments/gpt-4.1-mini/chat/completions?api-version=2025-01-01-preview', 'https://nexiva-etisalat-af-ai.openai.azure.com/openai/deployments/gpt-4.1-mini/chat/completions?api-version=2025-01-01-preview', 'azure', 'https://uaenorth.tts.speech.microsoft.com/cognitiveservices/v1', '7yAOU8Ce9WpRZnuBSBCKtnptzwRsgBwC41dZIFmKRSn34nc4A85xJQQJ99BIACF24PCXJ3w3AAAYACOGvMSy', 'https://api.perplexity.ai/chat/completions', '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', 'sonar', 'gpt-4.1-mini');
+('ETI_AF', 'azure', 'uaenorth', '7yAOU8Ce9WpRZnuBSBCKtnptzwRsgBwC41dZIFmKRSn___34nc4A85xJQQJ99BIACF24PCXJ3w3AAAYACOGvMSy', 'azure', 'https://nexiva-etisalat-af-ai.openai.azure.com/openai/deployments/gpt-4.1-mini/chat/completions?api-version=2025-01-01-preview', '6JIUNO5wZzB7NX2DEj0vYbZ0N4YDkamrq68qqKOjFPAxLm98EkuBJQQJ99BIACF24PCXJ3w3AAABACOG4LvJ____', 'azure', 'https://uaenorth.tts.speech.microsoft.com/cognitiveservices/v1', '7yAOU8Ce9Wp____RZnuBSBCKtnptzwRsgBwC41dZIFmKRSn34nc4A85xJQQJ99BIACF24PCXJ3w3AAAYACOGvMSy', 'https://api.perplexity.ai/chat/completions', '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', 'sonar', 'gpt-4.1-mini');
 
 -- Create voice_modulation table
 CREATE TABLE IF NOT EXISTS voice_modulation (

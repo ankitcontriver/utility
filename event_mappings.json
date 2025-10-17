@@ -1,0 +1,58 @@
+{
+  "fs_ce_events": [
+    "CHANNEL_CREATE:1_1",
+    "CHANNEL_ANSWER:1_4",
+    "PLAYBACK_STOP_done:6_1",
+    "PLAYBACK_STOP_break:6_5",
+    "DTMF:3_<dtmf>",
+    "CHANNEL_HANGUP:1_3",
+    "CHANNEL_HANGUP_COMPLETE:1_2",
+    "digitcollection:10_0",
+    "smart_ivr_response:smart_ivr_response",
+    "PLAY:19_0",
+    "RETRY:19_1",
+    "DIGITCOLLECT:19_2"
+  ],
+  "ce_cm_events": [
+    "Call_0:answer",
+    "Call_1:Normal Clearing",
+    "Play_0:playback",
+    "AIAssistant_0:send_eva",
+    "AIAssistant_1:stop_eva",
+    "MakeCall:MakeCall",
+    "CallPatch_0:CallPatch",
+    "MagicParrot_0:MagicParrotStart",
+    "MagicParrot_1:MagicParrotStop",
+    "SpecialEffects:SpecialEffects",
+    "SpeechDetection_0:SpeechDetection"
+  ],
+  "sub_event_causes":[
+  ],
+  "no_action_events":[
+    "PLAYBACK_START",
+    "Play_1",
+    "FetchChannel"
+  ],
+  "fs_ce_params": [
+    "msisdn:Caller-Caller-ID-Number",
+    "mscIp:variable_sip_received_ip",
+    "subEventCause:Hangup-Cause",
+    "playBackFilePath:Playback-File-Path",
+    "playBackStatus:Playback-Status",
+    "dtmf:DTMF-Digit",
+    "wrapperToCallModule:wrapperToCallModule",
+    "ivrCode:variable_sip_req_uri",
+    "logId:logId",
+    "llmCdrId:llmCdrId",
+    "vId:vId",
+    "bPartyMsisdn:variable_sip_req_uri",
+    "regexForIvrCode:@.*$",
+    "otp:otp",
+    "callType:Caller-Context"
+  ],
+  "webrtc_fs_ce_params": [
+    "msisdn:Caller-Callee-ID-Number",
+    "ivrCode:Caller-Callee-ID-Number",
+    "bPartyMsisdn:Caller-Caller-ID-Number"
+  ]
+}

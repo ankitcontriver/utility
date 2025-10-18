@@ -416,7 +416,7 @@ log "INFO" "Created automated Python processor with integrated configuration"
 # Run the Python processor
 log "INFO" "Executing Python XML processor..."
 
-if python3 automated_processor.py "$XML_FILE" > "$OUTPUT_FILE" 2>&1; then
+if python3 automated_processor.py "$XML_FILE" > "$OUTPUT_FILE" 2>/dev/null; then
     log "SUCCESS" "Python processor executed successfully"
 else
     log "ERROR" "Python processor failed to execute"
@@ -680,4 +680,3 @@ log "SUCCESS" "Fully automated setup process completed successfully!"
 echo -e "${BLUE}========================================${NC}"
 echo -e "${GREEN}🚀 Setup Complete - With STT Transcriptions!${NC}"
 echo -e "${BLUE}========================================${NC}"
-

@@ -1,8 +1,9 @@
 #!/bin/bash
 
-# Fully Automated IVR Setup Script - No User Input Required
+# Fully Automated IVR Setup Script with STT Transcription - No User Input Required
 # Usage: ./fully_automated_ivr_setup.sh [xml_file] [assistant_id]
 # All configuration is integrated - no prompts or user input needed
+# This version includes actual STT transcription of WAV files
 
 set -e
 
@@ -109,7 +110,7 @@ test_database_connection() {
 # =============================================================================
 
 echo -e "${BLUE}========================================${NC}"
-echo -e "${BLUE}🚀 Fully Automated IVR Setup${NC}"
+echo -e "${BLUE}🚀 Fully Automated IVR Setup with STT${NC}"
 echo -e "${BLUE}========================================${NC}"
 echo ""
 
@@ -144,7 +145,7 @@ fi
 log "INFO" "Step 1: Generating IVR STT Array and Path Finder JSON"
 echo -e "${PURPLE}Step 1: Processing XML and generating JSON...${NC}"
 
-# Create the Python processor with integrated configuration
+# Create the Python processor with integrated configuration and STT transcription
 cat > automated_processor.py << 'EOF'
 #!/usr/bin/env python3
 
@@ -152,7 +153,14 @@ import xml.etree.ElementTree as ET
 import json
 import re
 import sys
+import os
+import subprocess
 from datetime import datetime
+
+# Azure STT Configuration
+AZURE_STT_KEY = "7yAOU8Ce9WpRZnuBSBCKtnptzwRsgBwC41dZIFmKRSn34nc4A85xJQQJ99BIACF24PCXJ3w3AAAYACOGvMSy"
+AZURE_STT_REGION = "uaenorth"
+STT_URL = f"https://{AZURE_STT_REGION}.stt.speech.microsoft.com/speech/recognition/conversation/cognitiveservices/v1?language=en-US&format=detailed"
 
 def robust_xml_parse(xml_string):
     """Robust XML parsing with multiple fallback strategies"""
@@ -163,8 +171,76 @@ def robust_xml_parse(xml_string):
         print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: XML parsing failed: {e}")
         return None
 
+def transcribe_wav_with_curl(wav_file_path: str):
+    """Transcribe WAV file using Azure STT API"""
+    if not os.path.exists(wav_file_path):
+        return {
+            'status': 'error',
+            'error': f'File not found: {wav_file_path}',
+            'transcription': '',
+            'confidence': 0
+        }
+    
+    try:
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] INFO: Transcribing WAV file: {wav_file_path}")
+        
+        curl_cmd = [
+            'curl', '-s', '-w', '%{http_code}',
+            '-X', 'POST', STT_URL,
+            '-H', 'Content-Type: audio/wav; codecs=audio/pcm; samplerate=16000',
+            '-H', f'Ocp-Apim-Subscription-Key: {AZURE_STT_KEY}',
+            '-H', f'Ocp-Apim-Subscription-Region: {AZURE_STT_REGION}',
+            '-H', 'Accept: application/json',
+            '--data-binary', f'@{wav_file_path}'
+        ]
+        
+        result = subprocess.run(curl_cmd, capture_output=True, text=True)
+        response_text = result.stdout.strip()
+        status_code = response_text[-3:] if response_text[-3:].isdigit() else 'unknown'
+        json_response = response_text[:-3] if status_code != 'unknown' else response_text
+        
+        if status_code == '200' and json_response:
+            try:
+                stt_data = json.loads(json_response)
+                transcription = stt_data.get('DisplayText', '')
+                confidence = stt_data.get('Confidence', 0)
+                
+                print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: STT completed - '{transcription}' (confidence: {confidence})")
+                
+                return {
+                    'status': 'success',
+                    'transcription': transcription,
+                    'confidence': confidence,
+                    'raw_response': stt_data
+                }
+            except json.JSONDecodeError as e:
+                print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: JSON parse error: {e}")
+                return {
+                    'status': 'error',
+                    'error': f'JSON parse error: {e}',
+                    'transcription': '',
+                    'confidence': 0
+                }
+        else:
+            print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: STT request failed - Status: {status_code}")
+            return {
+                'status': 'error',
+                'error': f'HTTP {status_code}: {json_response}',
+                'transcription': '',
+                'confidence': 0
+            }
+            
+    except Exception as e:
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: Exception in STT processing: {e}")
+        return {
+            'status': 'error',
+            'error': str(e),
+            'transcription': '',
+            'confidence': 0
+        }
+
 def extract_navigation_nodes(root):
-    """Extract Navigation nodes with WAV files"""
+    """Extract Navigation nodes with WAV files and transcribe them"""
     navigation_nodes = {}
     
     for mx_cell in root.findall('.//mxCell'):
@@ -187,10 +263,17 @@ def extract_navigation_nodes(root):
                                     value_text = value.text
                                     if value_text and '.wav' in value_text:
                                         wav_file = value_text.strip()
+                                        
+                                        # Transcribe the WAV file
+                                        stt_result = transcribe_wav_with_curl(wav_file)
+                                        
                                         wav_files.append({
                                             'path': wav_file,
                                             'filename': wav_file.split('/')[-1] if '/' in wav_file else wav_file,
-                                            'is_voice_prompt': '_VOICEPROMPT' in wav_file
+                                            'is_voice_prompt': '_VOICEPROMPT' in wav_file,
+                                            'transcription': stt_result.get('transcription', ''),
+                                            'confidence': stt_result.get('confidence', 0),
+                                            'stt_status': stt_result.get('status', 'error')
                                         })
                     
                     if wav_files:
@@ -223,7 +306,7 @@ def extract_connections(root):
     return connections
 
 def generate_ivr_stt_array(navigation_nodes):
-    """Generate IVR STT Array from navigation nodes"""
+    """Generate IVR STT Array from navigation nodes with transcriptions"""
     ivr_stt_array = []
     
     for node_id, node_data in navigation_nodes.items():
@@ -233,7 +316,10 @@ def generate_ivr_stt_array(navigation_nodes):
                 'node_value': node_data['value'],
                 'wav_path': wav_file['path'],
                 'filename': wav_file['filename'],
-                'is_voice_prompt': wav_file['is_voice_prompt']
+                'is_voice_prompt': wav_file['is_voice_prompt'],
+                'transcription': wav_file['transcription'],
+                'confidence': wav_file['confidence'],
+                'stt_status': wav_file['stt_status']
             })
     
     return ivr_stt_array
@@ -296,6 +382,10 @@ def main():
         path_finder_json = generate_path_finder_json(root, navigation_nodes, connections)
         print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: Generated Path Finder JSON with {len(path_finder_json['nodes'])} nodes")
         
+        # Count successful transcriptions
+        successful_transcriptions = sum(1 for item in ivr_stt_array if item['stt_status'] == 'success')
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: {successful_transcriptions}/{len(ivr_stt_array)} WAV files transcribed successfully")
+        
         output = {
             'ivr_stt_array': ivr_stt_array,
             'path_finder_json': path_finder_json,
@@ -304,6 +394,8 @@ def main():
                 'total_wav_files': len(ivr_stt_array),
                 'total_nodes': len(path_finder_json['nodes']),
                 'navigation_nodes': len(navigation_nodes),
+                'successful_transcriptions': successful_transcriptions,
+                'failed_transcriptions': len(ivr_stt_array) - successful_transcriptions,
                 'generated_at': datetime.now().isoformat()
             }
         }
@@ -350,6 +442,16 @@ except Exception as e:
     print('N/A')
 " 2>/dev/null)
     
+    successful_transcriptions=$(python3 -c "
+import json
+try:
+    with open('$OUTPUT_FILE', 'r') as f:
+        data = json.load(f)
+    print(data['metadata']['successful_transcriptions'])
+except Exception as e:
+    print('N/A')
+" 2>/dev/null)
+    
     total_nodes=$(python3 -c "
 import json
 try:
@@ -362,8 +464,9 @@ except Exception as e:
     
     echo ""
     log "INFO" "Step 1 completed successfully"
-    echo -e "${GREEN}✓ IVR STT Array and Path Finder JSON generated${NC}"
+    echo -e "${GREEN}✓ IVR STT Array with transcriptions generated${NC}"
     echo -e "  • WAV files processed: ${GREEN}$total_wav_files${NC}"
+    echo -e "  • Successful transcriptions: ${GREEN}$successful_transcriptions${NC}"
     echo -e "  • Total nodes: ${GREEN}$total_nodes${NC}"
     
 else
@@ -399,10 +502,12 @@ def generate_sql_update(json_file, assistant_id):
         
         ivr_stt_array = data.get('ivr_stt_array', [])
         path_finder_json = data.get('path_finder_json', {})
+        metadata = data.get('metadata', {})
         
         print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: JSON data loaded successfully")
         print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] INFO: IVR STT Array entries: {len(ivr_stt_array)}")
         print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] INFO: Path Finder JSON nodes: {len(path_finder_json.get('nodes', {}))}")
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] INFO: Successful transcriptions: {metadata.get('successful_transcriptions', 0)}")
         
         # Convert to JSON strings
         ivr_stt_array_json = json.dumps(ivr_stt_array, indent=2)
@@ -418,6 +523,7 @@ def generate_sql_update(json_file, assistant_id):
 -- Source JSON file: {json_file}
 -- IVR STT Array entries: {len(ivr_stt_array)}
 -- Path Finder JSON nodes: {len(path_finder_json.get('nodes', {}))}
+-- Successful transcriptions: {metadata.get('successful_transcriptions', 0)}
 
 UPDATE assistant_configuration 
 SET 
@@ -553,11 +659,12 @@ echo -e "  • Output file: ${GREEN}$OUTPUT_FILE${NC}"
 echo -e "  • SQL file: ${GREEN}$SQL_FILE${NC}"
 echo -e "  • Database: ${GREEN}$DB_HOST:$DB_PORT/$DB_NAME${NC}"
 echo -e "  • WAV files processed: ${GREEN}$total_wav_files${NC}"
+echo -e "  • Successful transcriptions: ${GREEN}$successful_transcriptions${NC}"
 echo -e "  • Total nodes: ${GREEN}$total_nodes${NC}"
 
 echo ""
 echo -e "${BLUE}Database Fields Updated:${NC}"
-echo -e "  • ${GREEN}ivr_stt_array${NC} - Contains all WAV file mappings"
+echo -e "  • ${GREEN}ivr_stt_array${NC} - Contains WAV file mappings WITH transcriptions"
 echo -e "  • ${GREEN}path_finder_json${NC} - Contains complete flow structure"
 
 echo ""
@@ -566,10 +673,11 @@ echo -e "  1. Test the IVR flow with the updated configuration"
 echo -e "  2. Monitor call logs for proper STT processing"
 echo -e "  3. Check Azure STT integration with provided credentials"
 echo -e "  4. Verify the database update was successful"
+echo -e "  5. Review transcription quality and confidence scores"
 
 echo ""
 log "SUCCESS" "Fully automated setup process completed successfully!"
 echo -e "${BLUE}========================================${NC}"
-echo -e "${GREEN}🚀 Setup Complete - No User Input Required!${NC}"
+echo -e "${GREEN}🚀 Setup Complete - With STT Transcriptions!${NC}"
 echo -e "${BLUE}========================================${NC}"
 

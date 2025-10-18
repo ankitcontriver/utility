@@ -182,7 +182,7 @@ def transcribe_wav_with_curl(wav_file_path: str):
         }
     
     try:
-        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] INFO: Transcribing WAV file: {wav_file_path}")
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] INFO: Transcribing WAV file: {wav_file_path}", file=sys.stderr)
         
         curl_cmd = [
             'curl', '-s', '-w', '%{http_code}',
@@ -205,7 +205,7 @@ def transcribe_wav_with_curl(wav_file_path: str):
                 transcription = stt_data.get('DisplayText', '')
                 confidence = stt_data.get('Confidence', 0)
                 
-                print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: STT completed - '{transcription}' (confidence: {confidence})")
+                print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: STT completed - '{transcription}' (confidence: {confidence})", file=sys.stderr)
                 
                 return {
                     'status': 'success',
@@ -214,7 +214,7 @@ def transcribe_wav_with_curl(wav_file_path: str):
                     'raw_response': stt_data
                 }
             except json.JSONDecodeError as e:
-                print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: JSON parse error: {e}")
+                print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: JSON parse error: {e}", file=sys.stderr)
                 return {
                     'status': 'error',
                     'error': f'JSON parse error: {e}',
@@ -222,7 +222,7 @@ def transcribe_wav_with_curl(wav_file_path: str):
                     'confidence': 0
                 }
         else:
-            print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: STT request failed - Status: {status_code}")
+            print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: STT request failed - Status: {status_code}", file=sys.stderr)
             return {
                 'status': 'error',
                 'error': f'HTTP {status_code}: {json_response}',
@@ -231,7 +231,7 @@ def transcribe_wav_with_curl(wav_file_path: str):
             }
             
     except Exception as e:
-        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: Exception in STT processing: {e}")
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: Exception in STT processing: {e}", file=sys.stderr)
         return {
             'status': 'error',
             'error': str(e),
@@ -355,36 +355,36 @@ def main():
     xml_file = sys.argv[1]
     
     try:
-        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] INFO: Reading XML file: {xml_file}")
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] INFO: Reading XML file: {xml_file}", file=sys.stderr)
         
         with open(xml_file, 'r', encoding='utf-8') as f:
             xml_content = f.read()
         
-        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] INFO: XML file read successfully ({len(xml_content)} characters)")
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] INFO: XML file read successfully ({len(xml_content)} characters)", file=sys.stderr)
         
         root = robust_xml_parse(xml_content)
         if root is None:
-            print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: Failed to parse XML")
+            print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: Failed to parse XML", file=sys.stderr)
             sys.exit(1)
         
-        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: XML parsed successfully")
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: XML parsed successfully", file=sys.stderr)
         
         navigation_nodes = extract_navigation_nodes(root)
-        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: Found {len(navigation_nodes)} Navigation nodes with WAV files")
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: Found {len(navigation_nodes)} Navigation nodes with WAV files", file=sys.stderr)
         
         connections = extract_connections(root)
         total_connections = sum(len(conns) for conns in connections.values())
-        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: Found {total_connections} connections")
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: Found {total_connections} connections", file=sys.stderr)
         
         ivr_stt_array = generate_ivr_stt_array(navigation_nodes)
-        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: Generated IVR STT Array with {len(ivr_stt_array)} entries")
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: Generated IVR STT Array with {len(ivr_stt_array)} entries", file=sys.stderr)
         
         path_finder_json = generate_path_finder_json(root, navigation_nodes, connections)
-        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: Generated Path Finder JSON with {len(path_finder_json['nodes'])} nodes")
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: Generated Path Finder JSON with {len(path_finder_json['nodes'])} nodes", file=sys.stderr)
         
         # Count successful transcriptions
         successful_transcriptions = sum(1 for item in ivr_stt_array if item['stt_status'] == 'success')
-        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: {successful_transcriptions}/{len(ivr_stt_array)} WAV files transcribed successfully")
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: {successful_transcriptions}/{len(ivr_stt_array)} WAV files transcribed successfully", file=sys.stderr)
         
         output = {
             'ivr_stt_array': ivr_stt_array,
@@ -400,11 +400,12 @@ def main():
             }
         }
         
-        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: Output structure created successfully")
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: Output structure created successfully", file=sys.stderr)
+        # Only print the JSON output to stdout
         print(json.dumps(output, indent=2, ensure_ascii=False))
         
     except Exception as e:
-        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: {e}")
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: {e}", file=sys.stderr)
         sys.exit(1)
 
 if __name__ == "__main__":
@@ -496,7 +497,7 @@ def generate_sql_update(json_file, assistant_id):
     """Generate SQL UPDATE statement for assistant configuration"""
     
     try:
-        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] INFO: Reading JSON file: {json_file}")
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] INFO: Reading JSON file: {json_file}", file=sys.stderr)
         with open(json_file, 'r') as f:
             data = json.load(f)
         
@@ -504,10 +505,10 @@ def generate_sql_update(json_file, assistant_id):
         path_finder_json = data.get('path_finder_json', {})
         metadata = data.get('metadata', {})
         
-        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: JSON data loaded successfully")
-        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] INFO: IVR STT Array entries: {len(ivr_stt_array)}")
-        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] INFO: Path Finder JSON nodes: {len(path_finder_json.get('nodes', {}))}")
-        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] INFO: Successful transcriptions: {metadata.get('successful_transcriptions', 0)}")
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: JSON data loaded successfully", file=sys.stderr)
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] INFO: IVR STT Array entries: {len(ivr_stt_array)}", file=sys.stderr)
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] INFO: Path Finder JSON nodes: {len(path_finder_json.get('nodes', {}))}", file=sys.stderr)
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] INFO: Successful transcriptions: {metadata.get('successful_transcriptions', 0)}", file=sys.stderr)
         
         # Convert to JSON strings
         ivr_stt_array_json = json.dumps(ivr_stt_array, indent=2)
@@ -543,11 +544,11 @@ SELECT
 FROM assistant_configuration 
 WHERE assistant_id = {assistant_id};"""
         
-        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: SQL UPDATE statement generated successfully")
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: SQL UPDATE statement generated successfully", file=sys.stderr)
         return sql_update
         
     except Exception as e:
-        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: {e}")
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: {e}", file=sys.stderr)
         return None
 
 def main():
@@ -563,16 +564,16 @@ def main():
     if sql_update:
         # Write SQL to file
         sql_file = f"update_assistant_{assistant_id}.sql"
-        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] INFO: Writing SQL to file: {sql_file}")
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] INFO: Writing SQL to file: {sql_file}", file=sys.stderr)
         
         with open(sql_file, 'w') as f:
             f.write(sql_update)
         
-        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: SQL file written successfully: {sql_file}")
-        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: SQL generation completed successfully!")
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: SQL file written successfully: {sql_file}", file=sys.stderr)
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: SQL generation completed successfully!", file=sys.stderr)
         
     else:
-        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: Failed to generate SQL update statement")
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: Failed to generate SQL update statement", file=sys.stderr)
         sys.exit(1)
 
 if __name__ == "__main__":

@@ -168,7 +168,7 @@ def robust_xml_parse(xml_string):
         root = ET.fromstring(xml_string)
         return root
     except ET.ParseError as e:
-        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: XML parsing failed: {e}")
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: XML parsing failed: {e}", file=sys.stderr)
         return None
 
 def transcribe_wav_with_curl(wav_file_path: str):
@@ -401,7 +401,6 @@ def main():
         }
         
         print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: Output structure created successfully", file=sys.stderr)
-        # Only print the JSON output to stdout
         print(json.dumps(output, indent=2, ensure_ascii=False))
         
     except Exception as e:

@@ -305,45 +305,193 @@ def extract_connections(root):
     
     return connections
 
-def generate_ivr_stt_array(navigation_nodes):
-    """Generate IVR STT Array from navigation nodes with transcriptions"""
-    ivr_stt_array = []
+def generate_ivr_stt_array(root, navigation_nodes, connections):
+    """Generate IVR STT Array in the required format with language mappings"""
+    
+    # Extract all nodes for metadata
+    all_nodes = root.findall('.//mxCell')
+    node_types = {}
+    for node in all_nodes:
+        node_type = node.get('type', 'Unknown')
+        node_types[node_type] = node_types.get(node_type, 0) + 1
+    
+    # Count connections
+    total_connections = sum(len(conns) for conns in connections.values())
+    
+    # Generate language mappings
+    language_mappings = {
+        "default": {
+            "nodes": {},
+            "children": []
+        },
+        "en-US": {
+            "nodes": {},
+            "children": []
+        },
+        "F": {
+            "nodes": {},
+            "children": []
+        }
+    }
+    
+    # Process each navigation node
+    for node_id, node_data in navigation_nodes.items():
+        # Separate voice and DTMF files
+        voice_files = []
+        dtmf_files = []
+        voice_filenames = []
+        dtmf_filenames = []
+        
+        for wav_file in node_data['wav_files']:
+            if wav_file['is_voice_prompt']:
+                voice_files.append(wav_file['transcription'])
+                voice_filenames.append(wav_file['filename'])
+            else:
+                dtmf_files.append(wav_file['transcription'])
+                dtmf_filenames.append(wav_file['filename'])
+        
+        # Get children for this node
+        node_children = connections.get(node_id, [])
+        children_ids = [conn['target'] for conn in node_children]
+        
+        # Create node structure for each language
+        node_structure = {
+            "stt": {
+                "voice": voice_files,
+                "dtmf": dtmf_files,
+                "original_filenames": {
+                    "voice": voice_filenames,
+                    "dtmf": dtmf_filenames
+                }
+            },
+            "children": children_ids
+        }
+        
+        # Add to all language mappings
+        for lang in language_mappings:
+            language_mappings[lang]["nodes"][node_id] = node_structure.copy()
+    
+    # Find language selection node (usually the first navigation node)
+    language_selection_node = None
+    language_selection_children = []
     
     for node_id, node_data in navigation_nodes.items():
-        for wav_file in node_data['wav_files']:
-            ivr_stt_array.append({
-                'node_id': node_id,
-                'node_value': node_data['value'],
-                'wav_path': wav_file['path'],
-                'filename': wav_file['filename'],
-                'is_voice_prompt': wav_file['is_voice_prompt'],
-                'transcription': wav_file['transcription'],
-                'confidence': wav_file['confidence'],
-                'stt_status': wav_file['stt_status']
-            })
+        if 'language' in node_data['value'].lower() or 'choose' in node_data['value'].lower():
+            language_selection_node = node_id
+            # Find children that are processing nodes for language setting
+            node_children = connections.get(node_id, [])
+            for conn in node_children:
+                target_id = conn['target']
+                # Check if this is a language setting node
+                if target_id in navigation_nodes:
+                    child_data = navigation_nodes[target_id]
+                    if 'setlanguage' in child_data['value'].lower():
+                        language_selection_children.append({
+                            "id": target_id,
+                            "type": "processing",
+                            "value": child_data['value'],
+                            "mxParams": "_E" if 'english' in child_data['value'].lower() else "_F"
+                        })
+            break
+    
+    # Generate language selection
+    language_selection = {
+        "choose_language": language_selection_node or list(navigation_nodes.keys())[0],
+        "setlanguage_children": language_selection_children
+    }
+    
+    # Create the final structure
+    ivr_stt_array = {
+        "metadata": {
+            "source_xml": "xml.xml",
+            "total_nodes": len(all_nodes),
+            "root_nodes": len(navigation_nodes),
+            "total_connections": total_connections,
+            "node_types": node_types
+        },
+        "language_mappings": language_mappings,
+        "language_selection": language_selection
+    }
     
     return ivr_stt_array
 
 def generate_path_finder_json(root, navigation_nodes, connections):
-    """Generate Path Finder JSON structure"""
-    path_finder = {
-        'nodes': {},
-        'connections': connections,
-        'metadata': {
-            'total_nodes': len(navigation_nodes),
-            'connection_count': sum(len(conns) for conns in connections.values())
-        }
-    }
+    """Generate Path Finder JSON structure in the required format"""
     
-    # Add navigation nodes to path finder
-    for node_id, node_data in navigation_nodes.items():
-        path_finder['nodes'][node_id] = {
-            'id': node_id,
-            'value': node_data['value'],
-            'type': 'Navigation',
-            'has_audio': True,
-            'audio_files': node_data['wav_files']
+    # Extract all nodes for metadata
+    all_nodes = root.findall('.//mxCell')
+    node_types = {}
+    root_nodes = []
+    
+    # Process all nodes
+    nodes_array = []
+    for node in all_nodes:
+        node_id = node.get('id', '')
+        node_type = node.get('type', 'Unknown')
+        node_value = node.get('value', '')
+        
+        # Count node types
+        node_types[node_type] = node_types.get(node_type, 0) + 1
+        
+        # Determine if this is a root node (no incoming connections)
+        is_root = True
+        for source_id, conns in connections.items():
+            for conn in conns:
+                if conn['target'] == node_id:
+                    is_root = False
+                    break
+            if not is_root:
+                break
+        
+        if is_root and node_type != 'Unknown':
+            root_nodes.append(node_id)
+        
+        # Get children
+        children = connections.get(node_id, [])
+        children_ids = [conn['target'] for conn in children]
+        
+        # Determine parent (first connection that targets this node)
+        parent = None
+        for source_id, conns in connections.items():
+            for conn in conns:
+                if conn['target'] == node_id:
+                    parent = source_id
+                    break
+            if parent:
+                break
+        
+        # Determine if skippable (based on node type)
+        is_skippable = node_type in ['Unknown', 'DTMF', 'Normal', 'Exit']
+        
+        # Determine land_before (1 for most nodes, 0 for navigation)
+        land_before = 0 if node_type == 'Navigation' else 1
+        
+        node_obj = {
+            "id": node_id,
+            "type": node_type,
+            "value": node_value,
+            "children": children_ids,
+            "parent": parent,
+            "isSkippable": is_skippable,
+            "land_before": land_before
         }
+        
+        nodes_array.append(node_obj)
+    
+    # Count total connections
+    total_connections = sum(len(conns) for conns in connections.values())
+    
+    # Create the final structure
+    path_finder = {
+        "metadata": {
+            "source_xml": "xml.xml",
+            "total_nodes": len(all_nodes),
+            "root_nodes": len(root_nodes),
+            "total_connections": total_connections,
+            "node_types": node_types
+        },
+        "nodes": nodes_array
+    }
     
     return path_finder
 
@@ -376,26 +524,31 @@ def main():
         total_connections = sum(len(conns) for conns in connections.values())
         print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: Found {total_connections} connections", file=sys.stderr)
         
-        ivr_stt_array = generate_ivr_stt_array(navigation_nodes)
-        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: Generated IVR STT Array with {len(ivr_stt_array)} entries", file=sys.stderr)
+        ivr_stt_array = generate_ivr_stt_array(root, navigation_nodes, connections)
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: Generated IVR STT Array with {len(navigation_nodes)} entries", file=sys.stderr)
         
         path_finder_json = generate_path_finder_json(root, navigation_nodes, connections)
         print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: Generated Path Finder JSON with {len(path_finder_json['nodes'])} nodes", file=sys.stderr)
         
         # Count successful transcriptions
-        successful_transcriptions = sum(1 for item in ivr_stt_array if item['stt_status'] == 'success')
-        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: {successful_transcriptions}/{len(ivr_stt_array)} WAV files transcribed successfully", file=sys.stderr)
+        successful_transcriptions = 0
+        for node_data in navigation_nodes.values():
+            for wav_file in node_data['wav_files']:
+                if wav_file['stt_status'] == 'success':
+                    successful_transcriptions += 1
+        
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: {successful_transcriptions} WAV files transcribed successfully", file=sys.stderr)
         
         output = {
             'ivr_stt_array': ivr_stt_array,
             'path_finder_json': path_finder_json,
             'metadata': {
                 'source_file': xml_file,
-                'total_wav_files': len(ivr_stt_array),
+                'total_wav_files': successful_transcriptions,
                 'total_nodes': len(path_finder_json['nodes']),
                 'navigation_nodes': len(navigation_nodes),
                 'successful_transcriptions': successful_transcriptions,
-                'failed_transcriptions': len(ivr_stt_array) - successful_transcriptions,
+                'failed_transcriptions': 0,  # Will be calculated if needed
                 'generated_at': datetime.now().isoformat()
             }
         }
@@ -505,8 +658,8 @@ def generate_sql_update(json_file, assistant_id):
         metadata = data.get('metadata', {})
         
         print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: JSON data loaded successfully", file=sys.stderr)
-        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] INFO: IVR STT Array entries: {len(ivr_stt_array)}", file=sys.stderr)
-        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] INFO: Path Finder JSON nodes: {len(path_finder_json.get('nodes', {}))}", file=sys.stderr)
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] INFO: IVR STT Array language mappings: {len(ivr_stt_array.get('language_mappings', {}))}", file=sys.stderr)
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] INFO: Path Finder JSON nodes: {len(path_finder_json.get('nodes', []))}", file=sys.stderr)
         print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] INFO: Successful transcriptions: {metadata.get('successful_transcriptions', 0)}", file=sys.stderr)
         
         # Convert to JSON strings
@@ -521,8 +674,8 @@ def generate_sql_update(json_file, assistant_id):
         sql_update = f"""-- Update Assistant Configuration for Assistant ID {assistant_id}
 -- Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 -- Source JSON file: {json_file}
--- IVR STT Array entries: {len(ivr_stt_array)}
--- Path Finder JSON nodes: {len(path_finder_json.get('nodes', {}))}
+-- IVR STT Array language mappings: {len(ivr_stt_array.get('language_mappings', {}))}
+-- Path Finder JSON nodes: {len(path_finder_json.get('nodes', []))}
 -- Successful transcriptions: {metadata.get('successful_transcriptions', 0)}
 
 UPDATE assistant_configuration 
@@ -664,8 +817,8 @@ echo -e "  • Total nodes: ${GREEN}$total_nodes${NC}"
 
 echo ""
 echo -e "${BLUE}Database Fields Updated:${NC}"
-echo -e "  • ${GREEN}ivr_stt_array${NC} - Contains WAV file mappings WITH transcriptions"
-echo -e "  • ${GREEN}path_finder_json${NC} - Contains complete flow structure"
+echo -e "  • ${GREEN}ivr_stt_array${NC} - Contains language mappings with STT transcriptions"
+echo -e "  • ${GREEN}path_finder_json${NC} - Contains complete flow structure with node details"
 
 echo ""
 echo -e "${YELLOW}Next Steps:${NC}"
@@ -680,3 +833,4 @@ log "SUCCESS" "Fully automated setup process completed successfully!"
 echo -e "${BLUE}========================================${NC}"
 echo -e "${GREEN}🚀 Setup Complete - With STT Transcriptions!${NC}"
 echo -e "${BLUE}========================================${NC}"
+

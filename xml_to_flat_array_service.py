@@ -14,107 +14,116 @@ class XMLToFlatArrayConverter:
         self.connections = {}
         self.node_types = {}
         
-    def parse_xml_string_to_flat_array(self, xml_string: str) -> Dict[str, Any]:
-        """
-        Parse XML string and convert to flat array structure
-        Args:
-            xml_string (str): XML content as string
-        Returns:
-            dict: Flat array with metadata
-        """
-        logger.info(f"Creating flat_array from XM")
-        # Unescape HTML entities and unicode escapes
-        xml_string = html.unescape(xml_string)
-        xml_string = re.sub(r'\\u003c', '<', xml_string)
-        xml_string = re.sub(r'\\u003e', '>', xml_string)
-        xml_string = re.sub(r'\\u0022', '"', xml_string)
-        xml_string = xml_string.strip()
-        
-        # Try decoding unicode escapes
+def parse_xml_string_to_flat_array(self, xml_string: str) -> Dict[str, Any]:
+    """
+    Parse XML string and convert to flat array structure
+    Args:
+        xml_string (str): XML content as string
+    Returns:
+        dict: Flat array with metadata
+    """
+    logger.info(f"Creating flat_array from XM")
+    
+    # Unescape HTML entities and unicode escapes
+    xml_string = html.unescape(xml_string)
+    xml_string = re.sub(r'\\u003c', '<', xml_string)
+    xml_string = re.sub(r'\\u003e', '>', xml_string)
+    xml_string = re.sub(r'\\u0022', '"', xml_string)
+    xml_string = xml_string.strip()
+    
+    # Try decoding unicode escapes
+    try:
+        xml_string = xml_string.encode('utf-8').decode('unicode_escape')
+    except Exception as e:
+        logger.error(f"Unicode escape decode failed: {e}")
+    
+    # ULTIMATE SOLUTION: Multiple robust strategies
+    strategies = [
+        # Strategy 1: Clean problematic attributes
+        lambda x: re.sub(r'xmlParamsData="[^"]*"', 'xmlParamsData=""', x),
+        # Strategy 2: Remove attributes completely
+        lambda x: re.sub(r'\s+xmlParamsData="[^"]*"', '', x),
+        # Strategy 3: Remove any attribute with problematic content
+        lambda x: re.sub(r'\s+[a-zA-Z_][a-zA-Z0-9_]*="[^"]*<[^"]*"', '', x),
+        # Strategy 4: Remove any attribute with > in value
+        lambda x: re.sub(r'\s+[a-zA-Z_][a-zA-Z0-9_]*="[^"]*>[^"]*"', '', x),
+        # Strategy 5: Remove any attribute with & in value
+        lambda x: re.sub(r'\s+[a-zA-Z_][a-zA-Z0-9_]*="[^"]*&[^"]*"', '', x),
+        # Strategy 6: Remove any attribute with quotes in value
+        lambda x: re.sub(r'\s+[a-zA-Z_][a-zA-Z0-9_]*="[^"]*"[^"]*"', '', x),
+    ]
+    
+    # Try each strategy
+    for i, strategy in enumerate(strategies, 1):
         try:
-            xml_string = xml_string.encode('utf-8').decode('unicode_escape')
-        except Exception as e:
-            logger.error(f"Unicode escape decode failed: {e}")
-        
-        # Multiple cleaning strategies for robust XML parsing
-        xml_string = re.sub(r'xmlParamsData="[^"]*"', 'xmlParamsData=""', xml_string)
-        xml_string = re.sub(r'xmlFileData="[^"]*"', 'xmlFileData=""', xml_string)
-        
-        # Try parsing with error handling
-        try:
-            root = ET.fromstring(xml_string)
+            logger.info(f"Trying strategy {i}")
+            cleaned_xml = strategy(xml_string)
+            root = ET.fromstring(cleaned_xml)
+            logger.info(f"XML parsing succeeded with strategy {i}")
+            break
         except ET.ParseError as e:
-            logger.error(f"XML parsing failed: {e}")
-            
-            # Strategy 1: Remove attributes completely
-            xml_string = re.sub(r'\s+xmlParamsData="[^"]*"', '', xml_string)
-            xml_string = re.sub(r'\s+xmlFileData="[^"]*"', '', xml_string)
-            
-            try:
-                root = ET.fromstring(xml_string)
-                logger.info("XML parsing succeeded after removing attributes")
-            except ET.ParseError as e2:
-                logger.error(f"XML parsing failed even after removing attributes: {e2}")
-                
-                # Strategy 2: More aggressive cleaning
-                xml_string = re.sub(r'\s+[a-zA-Z_][a-zA-Z0-9_]*="[^"]*<[^"]*"', '', xml_string)
-                xml_string = re.sub(r'\s+[a-zA-Z_][a-zA-Z0-9_]*="[^"]*>[^"]*"', '', xml_string)
-                xml_string = re.sub(r'\s+[a-zA-Z_][a-zA-Z0-9_]*="[^"]*&[^"]*"', '', xml_string)
-                
+            logger.error(f"Strategy {i} failed: {e}")
+            if i == len(strategies):
+                # Last strategy failed, try lxml
                 try:
-                    root = ET.fromstring(xml_string)
-                    logger.info("XML parsing succeeded after aggressive cleaning")
-                except ET.ParseError as e3:
-                    logger.error(f"XML parsing failed completely: {e3}")
-                    raise ValueError(f"Failed to parse XML after all attempts: {e3}")
-        
-        root_element = root.find('root')
-        if root_element is None:
-            logger.error("No 'root' element found in XML")
-            raise ValueError("No 'root' element found in XML")
-        
-        self.nodes = {}
-        self.connections = {}
-        self.node_types = {}
-        
-        for mx_cell in root_element.findall('mxCell'):
-            cell_id = mx_cell.get('id')
-            cell_type = mx_cell.get('type', 'Unknown')
-            cell_value = mx_cell.get('value', '')
-            promptfiles = []
-            if cell_type == 'Navigation':
-                mx_params = mx_cell.find('mxParams')
-                if mx_params is not None:
-                    for mx_param in mx_params.findall('mxParam'):
-                        promptfile = mx_param.get('promptfile')
-                        if promptfile:
-                            promptfiles.append(promptfile)
-            if cell_id:
-                self.nodes[cell_id] = {
-                    'id': cell_id,
-                    'type': cell_type,
-                    'value': cell_value,
-                    'children': [],
-                    'parent': None,
-                    'promptfiles': promptfiles  # Only non-empty for Navigation nodes
-                }
-                self.node_types[cell_id] = cell_type
-        
-        for mx_cell in root_element.findall('mxCell'):
-            source = mx_cell.get('source')
-            target = mx_cell.get('target')
-            if source and target:
-                if source not in self.connections:
-                    self.connections[source] = []
-                self.connections[source].append(target)
-        
-        self._build_parent_child_relationships()
-        flat_array = self._convert_to_flat_array()
-        metadata = self._generate_metadata()
-        return {
-            'metadata': metadata,
-            'nodes': flat_array
-        }
+                    from lxml import etree
+                    root = etree.fromstring(cleaned_xml)
+                    logger.info("XML parsing succeeded with lxml")
+                    break
+                except ImportError:
+                    logger.error("lxml not available")
+                except Exception as e:
+                    logger.error(f"lxml parsing failed: {e}")
+                    raise ValueError(f"Failed to parse XML after all attempts: {e}")
+    
+    root_element = root.find('root')
+    if root_element is None:
+        logger.error("No 'root' element found in XML")
+        raise ValueError("No 'root' element found in XML")
+    
+    # Rest of your existing code...
+    self.nodes = {}
+    self.connections = {}
+    self.node_types = {}
+    
+    for mx_cell in root_element.findall('mxCell'):
+        cell_id = mx_cell.get('id')
+        cell_type = mx_cell.get('type', 'Unknown')
+        cell_value = mx_cell.get('value', '')
+        promptfiles = []
+        if cell_type == 'Navigation':
+            mx_params = mx_cell.find('mxParams')
+            if mx_params is not None:
+                for mx_param in mx_params.findall('mxParam'):
+                    promptfile = mx_param.get('promptfile')
+                    if promptfile:
+                        promptfiles.append(promptfile)
+        if cell_id:
+            self.nodes[cell_id] = {
+                'id': cell_id,
+                'type': cell_type,
+                'value': cell_value,
+                'children': [],
+                'parent': None,
+                'promptfiles': promptfiles
+            }
+            self.node_types[cell_id] = cell_type
+    
+    for mx_cell in root_element.findall('mxCell'):
+        source = mx_cell.get('source')
+        target = mx_cell.get('target')
+        if source and target:
+            if source not in self.connections:
+                self.connections[source] = []
+            self.connections[source].append(target)
+    
+    self._build_parent_child_relationships()
+    flat_array = self._convert_to_flat_array()
+    metadata = self._generate_metadata()
+    return {
+        'metadata': metadata,
+        'nodes': flat_array
+    }
 
     def parse_xml_to_flat_array(self, xml_file_path: str) -> Dict[str, Any]:
         """

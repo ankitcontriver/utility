@@ -117,6 +117,15 @@ def transcribe_wav_file(wav_file_path):
             'error': str(e)
         }
 
+def clean_filename(filename):
+    """Remove number prefix from filename (e.g., '3316-filename.wav' -> 'filename.wav')"""
+    if '-' in filename and filename[0].isdigit():
+        # Find the first dash and remove everything before it
+        dash_index = filename.find('-')
+        if dash_index > 0:
+            return filename[dash_index + 1:]
+    return filename
+
 def collect_wav_files_from_json(json_file):
     """Collect all WAV file paths from the JSON file"""
     log("INFO", f"Reading JSON file: {json_file}")
@@ -138,10 +147,11 @@ def collect_wav_files_from_json(json_file):
                 
                 # Collect voice files
                 for filename in original_filenames.get('voice', []):
-                    wav_path = f"/data/filestore/services/template/{filename}"
+                    # Filename is already clean and complete path
                     wav_files.append({
-                        'path': wav_path,
-                        'filename': filename,
+                        'path': filename,
+                        'filename': filename.split('/')[-1] if '/' in filename else filename,
+                        'original_filename': filename,
                         'type': 'voice',
                         'node_id': node_id,
                         'language': lang
@@ -149,10 +159,11 @@ def collect_wav_files_from_json(json_file):
                 
                 # Collect DTMF files
                 for filename in original_filenames.get('dtmf', []):
-                    wav_path = f"/data/filestore/services/template/{filename}"
+                    # Filename is already clean and complete path
                     wav_files.append({
-                        'path': wav_path,
-                        'filename': filename,
+                        'path': filename,
+                        'filename': filename.split('/')[-1] if '/' in filename else filename,
+                        'original_filename': filename,
                         'type': 'dtmf',
                         'node_id': node_id,
                         'language': lang
@@ -167,6 +178,10 @@ def collect_wav_files_from_json(json_file):
                 seen_paths.add(wav_file['path'])
         
         log("SUCCESS", f"Found {len(unique_wav_files)} unique WAV files")
+        log("DEBUG", f"Sample cleaned filenames:")
+        for wav_file in unique_wav_files[:3]:  # Show first 3 as examples
+            log("DEBUG", f"  Original: {wav_file['original_filename']} -> Clean: {wav_file['filename']}")
+        
         return unique_wav_files, data
         
     except Exception as e:
@@ -192,9 +207,9 @@ def update_json_with_transcriptions(data, transcription_results):
             # Update voice transcriptions
             voice_transcriptions = []
             for filename in stt_data.get('original_filenames', {}).get('voice', []):
-                wav_path = f"/data/filestore/services/template/{filename}"
-                if wav_path in transcription_results:
-                    result = transcription_results[wav_path]
+                # Filename is already clean and complete path
+                if filename in transcription_results:
+                    result = transcription_results[filename]
                     if result['status'] == 'success':
                         voice_transcriptions.append(result['transcription'])
                         successful_transcriptions += 1
@@ -208,9 +223,9 @@ def update_json_with_transcriptions(data, transcription_results):
             # Update DTMF transcriptions
             dtmf_transcriptions = []
             for filename in stt_data.get('original_filenames', {}).get('dtmf', []):
-                wav_path = f"/data/filestore/services/template/{filename}"
-                if wav_path in transcription_results:
-                    result = transcription_results[wav_path]
+                # Filename is already clean and complete path
+                if filename in transcription_results:
+                    result = transcription_results[filename]
                     if result['status'] == 'success':
                         dtmf_transcriptions.append(result['transcription'])
                         successful_transcriptions += 1

@@ -240,22 +240,22 @@ def generate_ivr_stt_array(root, navigation_nodes, connections):
         }
     }
     
-        # Process each navigation node
-        for node_id, node_data in navigation_nodes.items():
-            # Separate voice and DTMF files
-            voice_files = []
-            dtmf_files = []
-            voice_filenames = []
-            dtmf_filenames = []
-            
-            for wav_file in node_data['wav_files']:
-                if wav_file['is_voice_prompt']:
-                    voice_files.append(wav_file['transcription'])
-                    voice_filenames.append(wav_file['path'])  # Store complete path
-                else:
-                    dtmf_files.append(wav_file['transcription'])
-                    dtmf_filenames.append(wav_file['path'])  # Store complete path
+    # Process each navigation node
+    for node_id, node_data in navigation_nodes.items():
+        # Separate voice and DTMF files
+        voice_files = []
+        dtmf_files = []
+        voice_filenames = []
+        dtmf_filenames = []
         
+        for wav_file in node_data['wav_files']:
+            if wav_file['is_voice_prompt']:
+                voice_files.append(wav_file['transcription'])
+                voice_filenames.append(wav_file['path'])  # Store complete path
+            else:
+                dtmf_files.append(wav_file['transcription'])
+                dtmf_filenames.append(wav_file['path'])  # Store complete path
+    
         # Get children for this node
         node_children = connections.get(node_id, [])
         children_ids = [conn['target'] for conn in node_children]

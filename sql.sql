@@ -125,7 +125,7 @@ SET path_finder_json = '{
       "type": "Navigation",
       "value": "submenu1(informationandactivation)",
       "children": ["53"],
-      "parent": "10",
+      "parent": "12",
       "isSkippable": false,
       "land_before": 0
     },

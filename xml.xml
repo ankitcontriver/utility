@@ -41,9 +41,7 @@
             </mxParams>
         </mxCell>
         <mxCell id="12" type="DTMF" value="1" source="10" target="11"/>
-        <mxCell id="13" type="DTMF" value="*" source="11" target="11"/>
         <mxCell id="14" type="DTMF" value="#" source="10" target="11"/>
-        <mxCell id="15" type="DTMF" value="*" source="10" target="10"/>
         <mxCell id="16" type="DTMF" value="#" source="10" target="9"/>
         <mxCell id="17" type="Navigation" value="500mb">
             <mxParams>
@@ -59,8 +57,6 @@
         <mxCell id="20" type="DTMF" value="2" source="53" target="18"/>
         <mxCell id="21" type="DTMF" value="1" source="17" target="33"/>
         <mxCell id="22" type="DTMF" value="1" source="18" target="34"/>
-        <mxCell id="23" type="DTMF" value="*" source="17" target="17"/>
-        <mxCell id="24" type="DTMF" value="*" source="18" target="18"/>
         <mxCell id="25" type="DTMF" value="1" source="28" target="26"/>
         <mxCell id="26" type="URL" value=""/>
         <mxCell id="27" type="DTMF" value="*" source="28" target="28"/>
@@ -144,7 +140,7 @@
                 <mxParam patch="" patchwith="BParty" patchmode="SELECT" patchtimer="false" patchtimevalue="" randomizerUpperLimit="0" randomizerMinBaseAllowed="0" randomizerOffset="0" crbtcontentrepeatcount="0" sendAIAssistantCdrToKafka="false"/>
             </mxParams>
         </mxCell>
-        <mxCell id="61" type="DTMF" value="any" source="58" target="40"/>
+        <mxCell id="59" type="DTMF" value="any" source="58" target="40"/>
     </root>
 </BnGModel>
 

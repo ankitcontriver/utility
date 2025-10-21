@@ -8,9 +8,9 @@ const crypto = require("crypto");
 
 // Configure logging
 const logger = {
-    info: (msg) => console.log([INFO] ${new Date().toISOString()} - ${msg}),
-    error: (msg) => console.error([ERROR] ${new Date().toISOString()} - ${msg}),
-    debug: (msg) => console.log([DEBUG] ${new Date().toISOString()} - ${msg})
+    info: (msg) => console.log(`[INFO] ${new Date().toISOString()} - ${msg}`),
+    error: (msg) => console.error(`[ERROR] ${new Date().toISOString()} - ${msg}`),
+    debug: (msg) => console.log(`[DEBUG] ${new Date().toISOString()} - ${msg}`)
 };
 
 function generateCallId() {
@@ -33,11 +33,11 @@ function createChannelCreateEvent() {
                 "Event-Name": "CHANNEL_CREATE",
                 "Event-Date-Timestamp": timestamp.toString(),
                 "Unique-ID": callId,
-                "Caller-Caller-ID-Number": +1${Math.floor(Math.random() * 9000000000) + 1000000000},
-                "Caller-Callee-ID-Number": +1${Math.floor(Math.random() * 9000000000) + 1000000000},
+                "Caller-Caller-ID-Number": `+1${Math.floor(Math.random() * 9000000000) + 1000000000}`,
+                "Caller-Callee-ID-Number": `+1${Math.floor(Math.random() * 9000000000) + 1000000000}`,
                 "Caller-Context": "default",
-                "variable_sip_received_ip": 192.168.1.${Math.floor(Math.random() * 254) + 1},
-                "variable_sip_req_uri": sip:+1${Math.floor(Math.random() * 9000000000) + 1000000000}@example.com,
+                "variable_sip_received_ip": `192.168.1.${Math.floor(Math.random() * 254) + 1}`,
+                "variable_sip_req_uri": `sip:+1${Math.floor(Math.random() * 9000000000) + 1000000000}@example.com`,
                 "wrapperToCallModule": "cm2wrapper",
                 "logId": logId,
                 "callId": callId,
@@ -46,7 +46,7 @@ function createChannelCreateEvent() {
                 "operator": ["Verizon", "AT&T", "T-Mobile", "Sprint"][Math.floor(Math.random() * 4)],
                 "country": ["US", "UK", "DE", "FR", "IN", "AU", "CA"][Math.floor(Math.random() * 7)],
                 "language": ["en", "es", "fr", "de", "ja", "ko", "zh", "hi", "ar", "id"][Math.floor(Math.random() * 10)],
-                "msisdn": +1${Math.floor(Math.random() * 9000000000) + 1000000000},
+                "msisdn": `+1${Math.floor(Math.random() * 9000000000) + 1000000000}`,
                 "otp": Math.floor(Math.random() * 900000) + 100000,
                 "decrypted_timestamp": Date.now().toString()
             }
@@ -61,7 +61,7 @@ async function sendMessageWithDurability() {
             port: 5672,
             username: 'admin',
             password: 'admin',
-            container_id: test-sender-${crypto.randomBytes(4).toString('hex')},
+            container_id: `test-sender-${crypto.randomBytes(4).toString('hex')}`,
         });
 
         connection.on('connection_open', () => {
@@ -78,8 +78,8 @@ async function sendMessageWithDurability() {
                 const eventData = createChannelCreateEvent();
                 const message = JSON.stringify(eventData);
                 
-                logger.info(Sending message to cm2wrapper queue...);
-                logger.info(Message: ${message});
+                logger.info(`Sending message to cm2wrapper queue...`);
+                logger.info(`Message: ${message}`);
                 
                 // Send message with durability properties
                 sender.send({
@@ -109,13 +109,13 @@ async function sendMessageWithDurability() {
             });
 
             sender.on('rejected', (context) => {
-                logger.error(❌ Message rejected: ${context.reason});
-                reject(new Error(Message rejected: ${context.reason}));
+                logger.error(`❌ Message rejected: ${context.reason}`);
+                reject(new Error(`Message rejected: ${context.reason}`));
             });
         });
 
         connection.on('connection_error', (error) => {
-            logger.error(Connection error: ${error});
+            logger.error(`Connection error: ${error}`);
             reject(error);
         });
 
@@ -130,7 +130,7 @@ async function main() {
         await sendMessageWithDurability();
         logger.info("Script completed successfully");
     } catch (error) {
-        logger.error(Error: ${error.message});
+        logger.error(`Error: ${error.message}`);
         process.exit(1);
     }
 }
@@ -139,3 +139,4 @@ async function main() {
 if (require.main === module) {
     main().catch(console.error);
 }
+

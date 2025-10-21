@@ -141,6 +141,15 @@ def transcribe_wav_with_curl(wav_file_path: str):
             'confidence': 0
         }
 
+def clean_filename(filename):
+    """Remove number prefix from filename (e.g., '3316-filename.wav' -> 'filename.wav')"""
+    if '-' in filename and filename[0].isdigit():
+        # Find the first dash and remove everything before it
+        dash_index = filename.find('-')
+        if dash_index > 0:
+            return filename[dash_index + 1:]
+    return filename
+
 def extract_navigation_nodes(root):
     """Extract Navigation nodes with WAV files and transcribe them"""
     navigation_nodes = {}
@@ -158,15 +167,17 @@ def extract_navigation_nodes(root):
                 for mx_param in mx_params.findall('mxParam'):
                     promptfile = mx_param.get('promptfile')
                     if promptfile and '.wav' in promptfile:
-                        wav_file = promptfile.strip()
+                        # Clean the filename to remove number prefix
+                        clean_name = clean_filename(promptfile.strip())
                         
-                        # Transcribe the WAV file
-                        stt_result = transcribe_wav_with_curl(wav_file)
+                        # Transcribe the WAV file using the cleaned path
+                        stt_result = transcribe_wav_with_curl(clean_name)
                         
                         wav_files.append({
-                            'path': wav_file,
-                            'filename': wav_file.split('/')[-1] if '/' in wav_file else wav_file,
-                            'is_voice_prompt': '_VOICEPROMPT' in wav_file,
+                            'path': clean_name,  # Store the complete cleaned path
+                            'filename': clean_name.split('/')[-1] if '/' in clean_name else clean_name,
+                            'original_promptfile': promptfile.strip(),  # Keep original for reference
+                            'is_voice_prompt': '_VOICEPROMPT' in clean_name,
                             'transcription': stt_result.get('transcription', ''),
                             'confidence': stt_result.get('confidence', 0),
                             'stt_status': stt_result.get('status', 'error')
@@ -229,21 +240,21 @@ def generate_ivr_stt_array(root, navigation_nodes, connections):
         }
     }
     
-    # Process each navigation node
-    for node_id, node_data in navigation_nodes.items():
-        # Separate voice and DTMF files
-        voice_files = []
-        dtmf_files = []
-        voice_filenames = []
-        dtmf_filenames = []
-        
-        for wav_file in node_data['wav_files']:
-            if wav_file['is_voice_prompt']:
-                voice_files.append(wav_file['transcription'])
-                voice_filenames.append(wav_file['filename'])
-            else:
-                dtmf_files.append(wav_file['transcription'])
-                dtmf_filenames.append(wav_file['filename'])
+        # Process each navigation node
+        for node_id, node_data in navigation_nodes.items():
+            # Separate voice and DTMF files
+            voice_files = []
+            dtmf_files = []
+            voice_filenames = []
+            dtmf_filenames = []
+            
+            for wav_file in node_data['wav_files']:
+                if wav_file['is_voice_prompt']:
+                    voice_files.append(wav_file['transcription'])
+                    voice_filenames.append(wav_file['path'])  # Store complete path
+                else:
+                    dtmf_files.append(wav_file['transcription'])
+                    dtmf_filenames.append(wav_file['path'])  # Store complete path
         
         # Get children for this node
         node_children = connections.get(node_id, [])

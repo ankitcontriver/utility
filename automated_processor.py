@@ -13,6 +13,29 @@ AZURE_STT_KEY = "7yAOU8Ce9WpRZnuBSBCKtnptzwRsgBwC41dZIFmKRSn34nc4A85xJQQJ99BIACF
 AZURE_STT_REGION = "uaenorth"
 STT_URL = f"https://{AZURE_STT_REGION}.stt.speech.microsoft.com/speech/recognition/conversation/cognitiveservices/v1?language=en-US&format=detailed"
 
+def test_azure_stt_connection():
+    """Test Azure STT API connection"""
+    try:
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] INFO: Testing Azure STT API connection...", file=sys.stderr)
+        
+        # Test with a simple curl command to check API availability
+        test_cmd = [
+            'curl', '-s', '-w', '%{http_code}',
+            '-X', 'POST', STT_URL,
+            '-H', f'Ocp-Apim-Subscription-Key: {AZURE_STT_KEY}',
+            '-H', f'Ocp-Apim-Subscription-Region: {AZURE_STT_REGION}',
+            '-H', 'Accept: application/json'
+        ]
+        
+        result = subprocess.run(test_cmd, capture_output=True, text=True, timeout=10)
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] DEBUG: Test curl return code: {result.returncode}", file=sys.stderr)
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] DEBUG: Test response: {result.stdout[:200]}", file=sys.stderr)
+        
+        return True
+    except Exception as e:
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: Azure STT test failed: {e}", file=sys.stderr)
+        return False
+
 def robust_xml_parse(xml_string):
     """Robust XML parsing with multiple fallback strategies"""
     try:
@@ -38,6 +61,9 @@ def transcribe_wav_with_curl(wav_file_path: str):
     
     try:
         print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] INFO: Transcribing WAV file: {local_file_path}", file=sys.stderr)
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] DEBUG: File size: {os.path.getsize(local_file_path)} bytes", file=sys.stderr)
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] DEBUG: STT URL: {STT_URL}", file=sys.stderr)
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] DEBUG: Azure Key: {AZURE_STT_KEY[:10]}...", file=sys.stderr)
         
         curl_cmd = [
             'curl', '-s', '-w', '%{http_code}',
@@ -49,18 +75,36 @@ def transcribe_wav_with_curl(wav_file_path: str):
             '--data-binary', f'@{local_file_path}'
         ]
         
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] DEBUG: Executing curl command...", file=sys.stderr)
         result = subprocess.run(curl_cmd, capture_output=True, text=True)
+        
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] DEBUG: Curl return code: {result.returncode}", file=sys.stderr)
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] DEBUG: Curl stdout length: {len(result.stdout)}", file=sys.stderr)
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] DEBUG: Curl stderr: {result.stderr}", file=sys.stderr)
+        
         response_text = result.stdout.strip()
         status_code = response_text[-3:] if response_text[-3:].isdigit() else 'unknown'
         json_response = response_text[:-3] if status_code != 'unknown' else response_text
         
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] DEBUG: Status code: {status_code}", file=sys.stderr)
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] DEBUG: JSON response: {json_response[:200]}...", file=sys.stderr)
+        
         if status_code == '200' and json_response:
             try:
+                print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] DEBUG: Parsing JSON response...", file=sys.stderr)
                 stt_data = json.loads(json_response)
+                print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] DEBUG: Parsed STT data keys: {list(stt_data.keys())}", file=sys.stderr)
+                
                 transcription = stt_data.get('DisplayText', '')
                 confidence = stt_data.get('Confidence', 0)
                 
-                print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: STT completed - '{transcription}' (confidence: {confidence})", file=sys.stderr)
+                print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] DEBUG: Raw transcription: '{transcription}'", file=sys.stderr)
+                print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] DEBUG: Confidence: {confidence}", file=sys.stderr)
+                
+                if transcription:
+                    print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: STT completed - '{transcription}' (confidence: {confidence})", file=sys.stderr)
+                else:
+                    print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] WARNING: Empty transcription received", file=sys.stderr)
                 
                 # No cleanup needed - using original file path
                 
@@ -80,6 +124,7 @@ def transcribe_wav_with_curl(wav_file_path: str):
                 }
         else:
             print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: STT request failed - Status: {status_code}", file=sys.stderr)
+            print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] DEBUG: Full response: {response_text}", file=sys.stderr)
             return {
                 'status': 'error',
                 'error': f'HTTP {status_code}: {json_response}',
@@ -353,6 +398,10 @@ def main():
     xml_file = sys.argv[1]
     
     try:
+        # Test Azure STT connection first
+        if not test_azure_stt_connection():
+            print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] WARNING: Azure STT connection test failed, but continuing...", file=sys.stderr)
+        
         print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] INFO: Reading XML file: {xml_file}", file=sys.stderr)
         
         with open(xml_file, 'r', encoding='utf-8') as f:

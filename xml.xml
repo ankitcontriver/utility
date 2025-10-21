@@ -27,7 +27,7 @@
         <mxCell id="8" type="DTMF" value="any" source="4" target="56"/>
         <mxCell id="9" type="Navigation" value="mainmenu">
             <mxParams>
-                <mxParam promptfile="2264-/data/filestore/services/template/divraudiofiles/0frompreferredlanguageuptomainmenu/4mainmenu/english/e6excludingmybestoffers_enUS.wav" repeatcount="" timeout="2" bargein="true" voicedetection="false" randomizerUpperLimit="0" randomizerMinBaseAllowed="0" randomizerOffset="0" crbtcontentrepeatcount="0" sendAIAssistantCdrToKafka="false"/>
+                <mxParam promptfile="2265-/data/filestore/services/template/divraudiofiles/0frompreferredlanguageuptomainmenu/4mainmenu/english/e6includingmybestoffers_enUS.wav" repeatcount="" timeout="2" bargein="true" voicedetection="false" randomizerUpperLimit="0" randomizerMinBaseAllowed="0" randomizerOffset="0" crbtcontentrepeatcount="0" sendAIAssistantCdrToKafka="false"/>
             </mxParams>
         </mxCell>
         <mxCell id="10" type="Navigation" value="databundles">
@@ -93,7 +93,7 @@
         </mxCell>
         <mxCell id="35" type="Navigation" value="further assistnat">
             <mxParams>
-                <mxParam promptfile="3286-/data/filestore/services/template/divraudiofiles/8furtherassistance/2pendingcomplaintsincasecustomerhaspendingcomplaints/english/ifthereispendingcomplaint_enUS.wav" repeatcount="" timeout="2" bargein="true" voicedetection="false" randomizerUpperLimit="0" randomizerMinBaseAllowed="0" randomizerOffset="0" crbtcontentrepeatcount="0" sendAIAssistantCdrToKafka="false"/>
+                <mxParam promptfile="3319-/data/filestore/services/template/Prompts/ifcustomerhaspendingcomplaint_enUS.wav" repeatcount="" timeout="2" bargein="true" voicedetection="false" randomizerUpperLimit="0" randomizerMinBaseAllowed="0" randomizerOffset="0" crbtcontentrepeatcount="0" sendAIAssistantCdrToKafka="false"/>
             </mxParams>
         </mxCell>
         <mxCell id="36" type="DTMF" value="8" source="9" target="35"/>
@@ -103,7 +103,7 @@
             </mxParams>
         </mxCell>
         <mxCell id="38" type="DTMF" value="9" source="35" target="37"/>
-        <mxCell id="39" type="Check" value="success" source="37" target="40"/>
+        <mxCell id="39" type="Check" value="success" source="37" target="58"/>
         <mxCell id="40" type="Wait" value=""/>
         <mxCell id="41" type="Exit" value=""/>
         <mxCell id="42" type="DTMF" value="any" source="40" target="41"/>
@@ -139,6 +139,12 @@
             </mxParams>
         </mxCell>
         <mxCell id="57" type="DTMF" value="any" source="56" target="5"/>
+        <mxCell id="58" type="Patch" value="">
+            <mxParams>
+                <mxParam patch="" patchwith="BParty" patchmode="SELECT" patchtimer="false" patchtimevalue="" randomizerUpperLimit="0" randomizerMinBaseAllowed="0" randomizerOffset="0" crbtcontentrepeatcount="0" sendAIAssistantCdrToKafka="false"/>
+            </mxParams>
+        </mxCell>
+        <mxCell id="61" type="DTMF" value="any" source="58" target="40"/>
     </root>
 </BnGModel>
 

@@ -24,22 +24,20 @@ def robust_xml_parse(xml_string):
 
 def transcribe_wav_with_curl(wav_file_path: str):
     """Transcribe WAV file using Azure STT API"""
+    local_file_path = wav_file_path
+    
+    # Check if file exists locally (on server)
     if not os.path.exists(wav_file_path):
-        # For testing purposes, provide mock transcription based on filename
-        filename = wav_file_path.split('/')[-1] if '/' in wav_file_path else wav_file_path
-        mock_transcription = filename.replace('.wav', '').replace('_enUS', '').replace('_', ' ').title()
-        
-        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] INFO: File not found, using mock transcription: {mock_transcription}", file=sys.stderr)
-        
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: WAV file not found: {wav_file_path}", file=sys.stderr)
         return {
-            'status': 'mock',
+            'status': 'error',
             'error': f'File not found: {wav_file_path}',
-            'transcription': mock_transcription,
-            'confidence': 0.85
+            'transcription': '',
+            'confidence': 0
         }
     
     try:
-        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] INFO: Transcribing WAV file: {wav_file_path}", file=sys.stderr)
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] INFO: Transcribing WAV file: {local_file_path}", file=sys.stderr)
         
         curl_cmd = [
             'curl', '-s', '-w', '%{http_code}',
@@ -48,7 +46,7 @@ def transcribe_wav_with_curl(wav_file_path: str):
             '-H', f'Ocp-Apim-Subscription-Key: {AZURE_STT_KEY}',
             '-H', f'Ocp-Apim-Subscription-Region: {AZURE_STT_REGION}',
             '-H', 'Accept: application/json',
-            '--data-binary', f'@{wav_file_path}'
+            '--data-binary', f'@{local_file_path}'
         ]
         
         result = subprocess.run(curl_cmd, capture_output=True, text=True)
@@ -63,6 +61,8 @@ def transcribe_wav_with_curl(wav_file_path: str):
                 confidence = stt_data.get('Confidence', 0)
                 
                 print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: STT completed - '{transcription}' (confidence: {confidence})", file=sys.stderr)
+                
+                # No cleanup needed - using original file path
                 
                 return {
                     'status': 'success',
@@ -382,23 +382,27 @@ def main():
         
         # Count successful transcriptions
         successful_transcriptions = 0
+        failed_transcriptions = 0
         for node_data in navigation_nodes.values():
             for wav_file in node_data['wav_files']:
-                if wav_file['stt_status'] in ['success', 'mock']:
+                if wav_file['stt_status'] == 'success':
                     successful_transcriptions += 1
+                else:
+                    failed_transcriptions += 1
         
-        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: {successful_transcriptions} WAV files transcribed successfully", file=sys.stderr)
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: {successful_transcriptions} real STT transcriptions completed, {failed_transcriptions} failed", file=sys.stderr)
         
         output = {
             'ivr_stt_array': ivr_stt_array,
             'path_finder_json': path_finder_json,
             'metadata': {
                 'source_file': xml_file,
-                'total_wav_files': successful_transcriptions,
+                'total_wav_files': successful_transcriptions + failed_transcriptions,
                 'total_nodes': len(path_finder_json['nodes']),
                 'navigation_nodes': len(navigation_nodes),
-                'successful_transcriptions': successful_transcriptions,
-                'failed_transcriptions': 0,  # Will be calculated if needed
+                'successful_stt_transcriptions': successful_transcriptions,
+                'failed_stt_transcriptions': failed_transcriptions,
+                'total_transcriptions': successful_transcriptions + failed_transcriptions,
                 'generated_at': datetime.now().isoformat()
             }
         }

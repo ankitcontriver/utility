@@ -141,7 +141,7 @@ SET path_finder_json = ' {
       "children": [
         "53"
       ],
-      "parent": "10",
+      "parent": "12",
       "isSkippable": false,
       "land_before": 0
     },

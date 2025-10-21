@@ -116,7 +116,7 @@ SET path_finder_json = '{
       "type": "Navigation",
       "value": "databundles",
       "children": ["11", "11", "9"],
-      "parent": "10",
+      "parent": "11",
       "isSkippable": false,
       "land_before": 0
     },

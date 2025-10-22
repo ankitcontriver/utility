@@ -130,7 +130,7 @@ SET path_finder_json = ' {
       "children": [
         "11"
       ],
-      "parent": null
+      "parent": "9",
       "isSkippable": false,
       "land_before": 0
     },
@@ -576,4 +576,5 @@ SET path_finder_json = ' {
 }
 '
 WHERE assistant_id = 1;
+
 

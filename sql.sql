@@ -59,7 +59,7 @@ SET path_finder_json = ' {
         "4"
       ],
       "parent": "2",
-      "isSkippable": false,
+      "isSkippable": true,
       "land_before": 0
     },
     {
@@ -70,7 +70,7 @@ SET path_finder_json = ' {
         "56"
       ],
       "parent": "3",
-      "isSkippable": false,
+      "isSkippable": true,
       "land_before": 0
     },
     {
@@ -81,7 +81,7 @@ SET path_finder_json = ' {
         "9"
       ],
       "parent": "56",
-      "isSkippable": false,
+      "isSkippable": true,
       "land_before": 0
     },
     {
@@ -120,7 +120,7 @@ SET path_finder_json = ' {
         "35"
       ],
       "parent": "8",
-      "isSkippable": false,
+      "isSkippable": true,
       "land_before": 0
     },
     {
@@ -131,7 +131,7 @@ SET path_finder_json = ' {
         "11"
       ],
       "parent": "9",
-      "isSkippable": false,
+      "isSkippable": true,
       "land_before": 0
     },
     {
@@ -142,7 +142,7 @@ SET path_finder_json = ' {
         "53"
       ],
       "parent": "12",
-      "isSkippable": false,
+      "isSkippable": true,
       "land_before": 0
     },
     {
@@ -180,7 +180,7 @@ SET path_finder_json = ' {
         "33"
       ],
       "parent": "53",
-      "isSkippable": false,
+      "isSkippable": true,
       "land_before": 0
     },
     {
@@ -191,7 +191,7 @@ SET path_finder_json = ' {
         "34"
       ],
       "parent": "53",
-      "isSkippable": false,
+      "isSkippable": true,
       "land_before": 0
     },
     {
@@ -266,7 +266,7 @@ SET path_finder_json = ' {
         "28"
       ],
       "parent": "28",
-      "isSkippable": false,
+      "isSkippable": true,
       "land_before": 0
     },
     {
@@ -275,7 +275,7 @@ SET path_finder_json = ' {
       "value": "3gb",
       "children": [],
       "parent": null,
-      "isSkippable": false,
+      "isSkippable": true,
       "land_before": 0
     },
     {
@@ -293,7 +293,7 @@ SET path_finder_json = ' {
       "value": "successfulldeactiviation",
       "children": [],
       "parent": null,
-      "isSkippable": false,
+      "isSkippable": true,
       "land_before": 0
     },
     {
@@ -337,7 +337,7 @@ SET path_finder_json = ' {
         "37"
       ],
       "parent": "9",
-      "isSkippable": false,
+      "isSkippable": true,
       "land_before": 0
     },
     {
@@ -425,7 +425,7 @@ SET path_finder_json = ' {
         "50"
       ],
       "parent": "33",
-      "isSkippable": false,
+      "isSkippable": true,
       "land_before": 0
     },
     {
@@ -436,7 +436,7 @@ SET path_finder_json = ' {
         "50"
       ],
       "parent": "33",
-      "isSkippable": false,
+      "isSkippable": true,
       "land_before": 0
     },
     {
@@ -511,7 +511,7 @@ SET path_finder_json = ' {
         "17"
       ],
       "parent": "11",
-      "isSkippable": false,
+      "isSkippable": true,
       "land_before": 0
     },
     {
@@ -576,5 +576,4 @@ SET path_finder_json = ' {
 }
 '
 WHERE assistant_id = 1;
-
 

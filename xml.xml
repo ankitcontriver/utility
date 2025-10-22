@@ -24,7 +24,7 @@
         </mxCell>
         <mxCell id="6" type="Normal" value="" source="2" target="3"/>
         <mxCell id="7" type="DTMF" value="any" source="3" target="4"/>
-        <mxCell id="8" type="DTMF" value="any" source="4" target="56"/>
+        <mxCell id="8" type="DTMF" value="any" source="4" target="47"/>
         <mxCell id="9" type="Navigation" value="mainmenu">
             <mxParams>
                 <mxParam promptfile="2265-/data/filestore/services/template/divraudiofiles/0frompreferredlanguageuptomainmenu/4mainmenu/english/e6includingmybestoffers_enUS.wav" repeatcount="" timeout="2" bargein="true" voicedetection="false" randomizerUpperLimit="0" randomizerMinBaseAllowed="0" randomizerOffset="0" crbtcontentrepeatcount="0" sendAIAssistantCdrToKafka="false"/>
@@ -40,107 +40,97 @@
                 <mxParam promptfile="2767-/data/filestore/services/template/divraudiofiles/2databundles/1press1forinformationactivationpress2fordeactivation/english/e8_enUS.wav" repeatcount="" timeout="2" bargein="true" voicedetection="false" randomizerUpperLimit="0" randomizerMinBaseAllowed="0" randomizerOffset="0" crbtcontentrepeatcount="0" sendAIAssistantCdrToKafka="false"/>
             </mxParams>
         </mxCell>
-        <mxCell id="12" type="DTMF" value="1" source="10" target="11"/>
-        <mxCell id="14" type="DTMF" value="#" source="10" target="11"/>
-        <mxCell id="16" type="DTMF" value="#" source="10" target="9"/>
-        <mxCell id="17" type="Navigation" value="500mb">
+        <mxCell id="12" type="DTMF" value="1" source="10" target="44"/>
+        <mxCell id="13" type="DTMF" value="#" source="10" target="9"/>
+        <mxCell id="14" type="Navigation" value="500mb">
             <mxParams>
                 <mxParam promptfile="2795-/data/filestore/services/template/divraudiofiles/2databundles/4dailydatabundles/1informationactivation/english/2daily500mbsurpriseoffer30afndetails_01_enUS.wav" repeatcount="" timeout="2" bargein="true" voicedetection="false" randomizerUpperLimit="0" randomizerMinBaseAllowed="0" randomizerOffset="0" crbtcontentrepeatcount="0" sendAIAssistantCdrToKafka="false"/>
             </mxParams>
         </mxCell>
-        <mxCell id="18" type="Navigation" value="300mb">
+        <mxCell id="15" type="Navigation" value="300mb">
             <mxParams>
                 <mxParam promptfile="2796-/data/filestore/services/template/divraudiofiles/2databundles/4dailydatabundles/1informationactivation/english/3daily300mb5onnetmins20afndetails_01_enUS.wav" repeatcount="" timeout="2" bargein="true" voicedetection="false" randomizerUpperLimit="0" randomizerMinBaseAllowed="0" randomizerOffset="0" crbtcontentrepeatcount="0" sendAIAssistantCdrToKafka="false"/>
             </mxParams>
         </mxCell>
-        <mxCell id="19" type="DTMF" value="2" source="11" target="53"/>
-        <mxCell id="20" type="DTMF" value="2" source="53" target="18"/>
-        <mxCell id="21" type="DTMF" value="1" source="17" target="33"/>
-        <mxCell id="22" type="DTMF" value="1" source="18" target="34"/>
-        <mxCell id="25" type="DTMF" value="1" source="28" target="26"/>
-        <mxCell id="26" type="URL" value=""/>
-        <mxCell id="27" type="DTMF" value="*" source="28" target="28"/>
-        <mxCell id="28" type="Navigation" value="10gb">
+        <mxCell id="16" type="DTMF" value="2" source="44" target="15"/>
+        <mxCell id="17" type="DTMF" value="1" source="14" target="27"/>
+        <mxCell id="18" type="DTMF" value="1" source="15" target="27"/>
+        <mxCell id="19" type="DTMF" value="1" source="22" target="20"/>
+        <mxCell id="20" type="URL" value=""/>
+        <mxCell id="21" type="DTMF" value="*" source="22" target="22"/>
+        <mxCell id="22" type="Navigation" value="10gb">
             <mxParams>
                 <mxParam repeatcount="" timeout="2" bargein="true" voicedetection="false" randomizerUpperLimit="0" randomizerMinBaseAllowed="0" randomizerOffset="0" crbtcontentrepeatcount="0" sendAIAssistantCdrToKafka="false"/>
             </mxParams>
         </mxCell>
-        <mxCell id="29" type="Navigation" value="3gb">
+        <mxCell id="23" type="Navigation" value="3gb">
             <mxParams>
                 <mxParam repeatcount="" timeout="2" bargein="true" voicedetection="false" randomizerUpperLimit="0" randomizerMinBaseAllowed="0" randomizerOffset="0" crbtcontentrepeatcount="0" sendAIAssistantCdrToKafka="false"/>
             </mxParams>
         </mxCell>
-        <mxCell id="30" type="DTMF" value="2" source="9" target="10"/>
-        <mxCell id="31" type="Navigation" value="successfulldeactiviation">
+        <mxCell id="24" type="DTMF" value="2" source="9" target="10"/>
+        <mxCell id="25" type="Navigation" value="successfulldeactiviation">
             <mxParams>
                 <mxParam repeatcount="" timeout="25" bargein="true" voicedetection="false" randomizerUpperLimit="0" randomizerMinBaseAllowed="0" randomizerOffset="0" crbtcontentrepeatcount="0" sendAIAssistantCdrToKafka="false"/>
             </mxParams>
         </mxCell>
-        <mxCell id="32" type="DTMF" value="any" source="5" target="9"/>
-        <mxCell id="33" type="GenericAPIActionHandler" value="activated2">
+        <mxCell id="26" type="DTMF" value="any" source="5" target="9"/>
+        <mxCell id="27" type="GenericAPIActionHandler" value="activated2">
             <mxParams>
-                <mxParam randomizerUpperLimit="0" randomizerMinBaseAllowed="0" randomizerOffset="0" crbtcontentrepeatcount="0" sendAIAssistantCdrToKafka="false" genericApiBaseUrl="http://192.168.240.30:8088/api/transferRest/eta/crm/v1/add-user-offer" genericApiMethodType="POST" genericApiConnectTimeout="6000" genericApiSuccessCriteria="resultCode==&quot;0000&quot;" transformationJson="" genericApiHeaders="Content-Type:application/json;Content-Type:application/json" genericApiReadTimeout="6000" genericApiBody="{&quot;msisdn&quot;:&quot;$apartymsisdn$&quot;,&quot;offerCode&quot;:&quot;d200&quot;,&quot;channel&quot;:910}"/>
+                <mxParam randomizerUpperLimit="0" randomizerMinBaseAllowed="0" randomizerOffset="0" crbtcontentrepeatcount="0" sendAIAssistantCdrToKafka="false" genericApiBaseUrl="http://192.168.240.30:8088/api/transferRest/eta/crm/v1/add-user-offer" genericApiMethodType="POST" genericApiConnectTimeout="6000" genericApiSuccessCriteria="resultCode==&quot;0000&quot;" transformationJson="" genericApiHeaders="Content-Type:application/json;Authorization:ODA1NDdkYTM4Mzg0NGU1N2EyMGRiMDJiODVmYzdhMDA=" genericApiReadTimeout="6000" genericApiBody="{&quot;msisdn&quot;:&quot;93786101035&quot;,&quot;offerCode&quot;:&quot;d200&quot;,&quot;channel&quot;:&quot;910&quot;}"/>
             </mxParams>
         </mxCell>
-        <mxCell id="34" type="GenericAPIActionHandler" value="activated2">
-            <mxParams>
-                <mxParam randomizerUpperLimit="0" randomizerMinBaseAllowed="0" randomizerOffset="0" crbtcontentrepeatcount="0" sendAIAssistantCdrToKafka="false" genericApiBaseUrl="http://192.168.240.30:8088/api/transferRest/eta/crm/v1/add-user-offer" genericApiMethodType="POST" genericApiConnectTimeout="6000" genericApiSuccessCriteria="resultCode==&quot;0000&quot;" transformationJson="" genericApiHeaders="Content-Type:application/json;Content-Type:application/json" genericApiReadTimeout="6000" genericApiBody="{&quot;msisdn&quot;:&quot;$apartymsisdn$&quot;,&quot;offerCode&quot;:&quot;d200&quot;,&quot;channel&quot;:910}"/>
-            </mxParams>
-        </mxCell>
-        <mxCell id="35" type="Navigation" value="further assistnat">
+        <mxCell id="28" type="Navigation" value="further assistnat">
             <mxParams>
                 <mxParam promptfile="3319-/data/filestore/services/template/Prompts/ifcustomerhaspendingcomplaint_enUS.wav" repeatcount="" timeout="2" bargein="true" voicedetection="false" randomizerUpperLimit="0" randomizerMinBaseAllowed="0" randomizerOffset="0" crbtcontentrepeatcount="0" sendAIAssistantCdrToKafka="false"/>
             </mxParams>
         </mxCell>
-        <mxCell id="36" type="DTMF" value="8" source="9" target="35"/>
-        <mxCell id="37" type="Dialout" value="">
+        <mxCell id="29" type="DTMF" value="8" source="9" target="28"/>
+        <mxCell id="30" type="Dialout" value="">
             <mxParams>
-                <mxParam cli="false" dialout="B party" type="SELECT" cutonringing="false" resourceurl="" dialouttime="0" consentgateway="9876543210" cgcli="" dialbg="" patchonringing="false" randomizerUpperLimit="0" randomizerMinBaseAllowed="0" randomizerOffset="0" changeapartynumber="false" crbtcontentrepeatcount="0" sendAIAssistantCdrToKafka="false"/>
+                <mxParam cli="false" dialout="B party" type="SELECT" cutonringing="false" resourceurl="http://127.0.0.1:8766/FreePhone/getChannel?function=1#argument=3#service=1" dialouttime="0" consentgateway="9876543210" cgcli="" dialbg="" patchonringing="false" randomizerUpperLimit="0" randomizerMinBaseAllowed="0" randomizerOffset="0" changeapartynumber="false" crbtcontentrepeatcount="0" sendAIAssistantCdrToKafka="false"/>
             </mxParams>
         </mxCell>
-        <mxCell id="38" type="DTMF" value="9" source="35" target="37"/>
-        <mxCell id="39" type="Check" value="success" source="37" target="58"/>
-        <mxCell id="40" type="Wait" value=""/>
-        <mxCell id="41" type="Exit" value=""/>
-        <mxCell id="42" type="DTMF" value="any" source="40" target="41"/>
-        <mxCell id="43" type="Check" value="failure" source="37" target="41"/>
-        <mxCell id="44" type="Navigation" value="successub">
+        <mxCell id="31" type="DTMF" value="9" source="28" target="30"/>
+        <mxCell id="32" type="Check" value="success" source="30" target="49"/>
+        <mxCell id="33" type="Wait" value=""/>
+        <mxCell id="34" type="Exit" value=""/>
+        <mxCell id="35" type="DTMF" value="any" source="33" target="34"/>
+        <mxCell id="36" type="Check" value="failure" source="30" target="34"/>
+        <mxCell id="37" type="Navigation" value="successub">
+            <mxParams>
+                <mxParam promptfile="3320-/data/filestore/services/template/Prompts/service_activation_success_enUs.wav" repeatcount="" timeout="2" bargein="true" voicedetection="false" randomizerUpperLimit="0" randomizerMinBaseAllowed="0" randomizerOffset="0" crbtcontentrepeatcount="0" sendAIAssistantCdrToKafka="false"/>
+            </mxParams>
+        </mxCell>
+        <mxCell id="38" type="Navigation" value="">
             <mxParams>
                 <mxParam promptfile="3317-/data/filestore/services/template/Prompts/service_activation_error_enUS.wav" repeatcount="" timeout="2" bargein="true" voicedetection="false" randomizerUpperLimit="0" randomizerMinBaseAllowed="0" randomizerOffset="0" crbtcontentrepeatcount="0" sendAIAssistantCdrToKafka="false"/>
             </mxParams>
         </mxCell>
-        <mxCell id="45" type="Navigation" value="">
+        <mxCell id="39" type="Check" value="success" source="27" target="37"/>
+        <mxCell id="40" type="Check" value="failure" source="27" target="38"/>
+        <mxCell id="41" type="Exit" value=""/>
+        <mxCell id="42" type="DTMF" value="any" source="37" target="41"/>
+        <mxCell id="43" type="DTMF" value="any" source="38" target="41"/>
+        <mxCell id="44" type="Navigation" value="dailymenu">
             <mxParams>
-                <mxParam promptfile="3316-/data/filestore/services/template/Prompts/service_deactivation_success_enUS.wav" repeatcount="" timeout="2" bargein="true" voicedetection="false" randomizerUpperLimit="0" randomizerMinBaseAllowed="0" randomizerOffset="0" crbtcontentrepeatcount="0" sendAIAssistantCdrToKafka="false"/>
-            </mxParams>
-        </mxCell>
-        <mxCell id="46" type="Check" value="success" source="33" target="44"/>
-        <mxCell id="47" type="Check" value="failure" source="33" target="45"/>
-        <mxCell id="48" type="Check" value="success" source="34" target="44"/>
-        <mxCell id="49" type="Check" value="failure" source="34" target="45"/>
-        <mxCell id="50" type="Exit" value=""/>
-        <mxCell id="51" type="DTMF" value="any" source="44" target="50"/>
-        <mxCell id="52" type="DTMF" value="any" source="45" target="50"/>
-        <mxCell id="53" type="Navigation" value="dailymenu">
-            <mxParams>
-                <mxParam promptfile="2770-/data/filestore/services/template/divraudiofiles/2databundles/2press1forhourlypress8forsocialbundles/english/e9_enUS.wav" repeatcount="" timeout="2" bargein="true" voicedetection="false" randomizerUpperLimit="0" randomizerMinBaseAllowed="0" randomizerOffset="0" crbtcontentrepeatcount="0" sendAIAssistantCdrToKafka="false"/>
                 <mxParam promptfile="2794-/data/filestore/services/template/divraudiofiles/2databundles/4dailydatabundles/1informationactivation/english/1press1for500mbsurpriseoffer30afnpress6for3gb90afn_01_01_enUS.wav" repeatcount="" timeout="2" bargein="true" voicedetection="false" randomizerUpperLimit="0" randomizerMinBaseAllowed="0" randomizerOffset="0" crbtcontentrepeatcount="0" sendAIAssistantCdrToKafka="false"/>
             </mxParams>
         </mxCell>
-        <mxCell id="54" type="DTMF" value="1" source="53" target="17"/>
-        <mxCell id="55" type="Processing" value=""/>
-        <mxCell id="56" type="Processing" value="setsmartivrenabledflag">
+        <mxCell id="45" type="DTMF" value="1" source="44" target="14"/>
+        <mxCell id="46" type="Processing" value=""/>
+        <mxCell id="47" type="Processing" value="setsmartivrenabledflag">
             <mxParams>
                 <mxParam value="true" randomizerUpperLimit="0" randomizerMinBaseAllowed="0" randomizerOffset="0" crbtcontentrepeatcount="0" sendAIAssistantCdrToKafka="false"/>
             </mxParams>
         </mxCell>
-        <mxCell id="57" type="DTMF" value="any" source="56" target="5"/>
-        <mxCell id="58" type="Patch" value="">
+        <mxCell id="48" type="DTMF" value="any" source="47" target="5"/>
+        <mxCell id="49" type="Patch" value="">
             <mxParams>
                 <mxParam patch="" patchwith="BParty" patchmode="SELECT" patchtimer="false" patchtimevalue="" randomizerUpperLimit="0" randomizerMinBaseAllowed="0" randomizerOffset="0" crbtcontentrepeatcount="0" sendAIAssistantCdrToKafka="false"/>
             </mxParams>
         </mxCell>
-        <mxCell id="59" type="DTMF" value="any" source="58" target="40"/>
+        <mxCell id="50" type="DTMF" value="any" source="49" target="33"/>
     </root>
 </BnGModel>
 

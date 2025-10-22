@@ -2,19 +2,19 @@ UPDATE assistant_configuration
 SET path_finder_json = ' {
   "metadata": {
     "source_xml": "xml.xml",
-    "total_nodes": 56,
-    "root_nodes": 32,
-    "total_connections": 28,
+    "total_nodes": 51,
+    "root_nodes": 29,
+    "total_connections": 24,
     "node_types": {
       "Unknown": 2,
       "Start": 1,
       "Navigation": 15,
       "Normal": 1,
-      "DTMF": 21,
+      "DTMF": 19,
       "URL": 1,
-      "GenericAPIActionHandler": 2,
+      "GenericAPIActionHandler": 1,
       "Dialout": 1,
-      "Check": 6,
+      "Check": 4,
       "Wait": 1,
       "Exit": 2,
       "Processing": 2,
@@ -67,7 +67,7 @@ SET path_finder_json = ' {
       "type": "Navigation",
       "value": "promotional annoucement",
       "children": [
-        "56"
+        "47"
       ],
       "parent": "3",
       "isSkippable": true,
@@ -80,7 +80,7 @@ SET path_finder_json = ' {
       "children": [
         "9"
       ],
-      "parent": "56",
+      "parent": "47",
       "isSkippable": true,
       "land_before": 0
     },
@@ -117,9 +117,9 @@ SET path_finder_json = ' {
       "value": "mainmenu",
       "children": [
         "10",
-        "35"
+        "28"
       ],
-      "parent": "8",
+      "parent": null,
       "isSkippable": true,
       "land_before": 0
     },
@@ -128,7 +128,7 @@ SET path_finder_json = ' {
       "type": "Navigation",
       "value": "databundles",
       "children": [
-        "11"
+        "44"
       ],
       "parent": "9",
       "isSkippable": true,
@@ -138,10 +138,8 @@ SET path_finder_json = ' {
       "id": "11",
       "type": "Navigation",
       "value": "submenu1(informationandactivation)",
-      "children": [
-        "53"
-      ],
-      "parent": "12",
+      "children": [],
+      "parent": null,
       "isSkippable": true,
       "land_before": 0
     },
@@ -155,7 +153,7 @@ SET path_finder_json = ' {
       "land_before": 1
     },
     {
-      "id": "14",
+      "id": "13",
       "type": "DTMF",
       "value": "#",
       "children": [],
@@ -164,9 +162,31 @@ SET path_finder_json = ' {
       "land_before": 1
     },
     {
+      "id": "14",
+      "type": "Navigation",
+      "value": "500mb",
+      "children": [
+        "27"
+      ],
+      "parent": "44",
+      "isSkippable": true,
+      "land_before": 0
+    },
+    {
+      "id": "15",
+      "type": "Navigation",
+      "value": "300mb",
+      "children": [
+        "27"
+      ],
+      "parent": "44",
+      "isSkippable": true,
+      "land_before": 0
+    },
+    {
       "id": "16",
       "type": "DTMF",
-      "value": "#",
+      "value": "2",
       "children": [],
       "parent": null,
       "isSkippable": true,
@@ -174,30 +194,26 @@ SET path_finder_json = ' {
     },
     {
       "id": "17",
-      "type": "Navigation",
-      "value": "500mb",
-      "children": [
-        "33"
-      ],
-      "parent": "53",
+      "type": "DTMF",
+      "value": "1",
+      "children": [],
+      "parent": null,
       "isSkippable": true,
-      "land_before": 0
+      "land_before": 1
     },
     {
       "id": "18",
-      "type": "Navigation",
-      "value": "300mb",
-      "children": [
-        "34"
-      ],
-      "parent": "53",
+      "type": "DTMF",
+      "value": "1",
+      "children": [],
+      "parent": null,
       "isSkippable": true,
-      "land_before": 0
+      "land_before": 1
     },
     {
       "id": "19",
       "type": "DTMF",
-      "value": "2",
+      "value": "1",
       "children": [],
       "parent": null,
       "isSkippable": true,
@@ -205,51 +221,15 @@ SET path_finder_json = ' {
     },
     {
       "id": "20",
-      "type": "DTMF",
-      "value": "2",
-      "children": [],
-      "parent": null,
-      "isSkippable": true,
-      "land_before": 1
-    },
-    {
-      "id": "21",
-      "type": "DTMF",
-      "value": "1",
-      "children": [],
-      "parent": null,
-      "isSkippable": true,
-      "land_before": 1
-    },
-    {
-      "id": "22",
-      "type": "DTMF",
-      "value": "1",
-      "children": [],
-      "parent": null,
-      "isSkippable": true,
-      "land_before": 1
-    },
-    {
-      "id": "25",
-      "type": "DTMF",
-      "value": "1",
-      "children": [],
-      "parent": null,
-      "isSkippable": true,
-      "land_before": 1
-    },
-    {
-      "id": "26",
       "type": "URL",
       "value": "",
       "children": [],
-      "parent": "28",
+      "parent": "22",
       "isSkippable": false,
       "land_before": 1
     },
     {
-      "id": "27",
+      "id": "21",
       "type": "DTMF",
       "value": "*",
       "children": [],
@@ -258,19 +238,19 @@ SET path_finder_json = ' {
       "land_before": 1
     },
     {
-      "id": "28",
+      "id": "22",
       "type": "Navigation",
       "value": "10gb",
       "children": [
-        "26",
-        "28"
+        "20",
+        "22"
       ],
-      "parent": "28",
+      "parent": "22",
       "isSkippable": true,
       "land_before": 0
     },
     {
-      "id": "29",
+      "id": "23",
       "type": "Navigation",
       "value": "3gb",
       "children": [],
@@ -279,7 +259,7 @@ SET path_finder_json = ' {
       "land_before": 0
     },
     {
-      "id": "30",
+      "id": "24",
       "type": "DTMF",
       "value": "2",
       "children": [],
@@ -288,7 +268,7 @@ SET path_finder_json = ' {
       "land_before": 1
     },
     {
-      "id": "31",
+      "id": "25",
       "type": "Navigation",
       "value": "successfulldeactiviation",
       "children": [],
@@ -297,7 +277,7 @@ SET path_finder_json = ' {
       "land_before": 0
     },
     {
-      "id": "32",
+      "id": "26",
       "type": "DTMF",
       "value": "any",
       "children": [],
@@ -306,42 +286,30 @@ SET path_finder_json = ' {
       "land_before": 1
     },
     {
-      "id": "33",
+      "id": "27",
       "type": "GenericAPIActionHandler",
       "value": "activated2",
       "children": [
-        "44",
-        "45"
+        "37",
+        "38"
       ],
-      "parent": "17",
+      "parent": "14",
       "isSkippable": false,
       "land_before": 1
     },
     {
-      "id": "34",
-      "type": "GenericAPIActionHandler",
-      "value": "activated2",
-      "children": [
-        "44",
-        "45"
-      ],
-      "parent": "18",
-      "isSkippable": false,
-      "land_before": 1
-    },
-    {
-      "id": "35",
+      "id": "28",
       "type": "Navigation",
       "value": "further assistnat",
       "children": [
-        "37"
+        "30"
       ],
       "parent": "9",
       "isSkippable": true,
       "land_before": 0
     },
     {
-      "id": "36",
+      "id": "29",
       "type": "DTMF",
       "value": "8",
       "children": [],
@@ -350,25 +318,94 @@ SET path_finder_json = ' {
       "land_before": 1
     },
     {
-      "id": "37",
+      "id": "30",
       "type": "Dialout",
       "value": "",
       "children": [
-        "58",
-        "41"
+        "49",
+        "34"
       ],
-      "parent": "35",
+      "parent": "28",
       "isSkippable": false,
       "land_before": 1
     },
     {
-      "id": "38",
+      "id": "31",
       "type": "DTMF",
       "value": "9",
       "children": [],
       "parent": null,
       "isSkippable": true,
       "land_before": 1
+    },
+    {
+      "id": "32",
+      "type": "Check",
+      "value": "success",
+      "children": [],
+      "parent": null,
+      "isSkippable": false,
+      "land_before": 1
+    },
+    {
+      "id": "33",
+      "type": "Wait",
+      "value": "",
+      "children": [
+        "34"
+      ],
+      "parent": "49",
+      "isSkippable": false,
+      "land_before": 1
+    },
+    {
+      "id": "34",
+      "type": "Exit",
+      "value": "",
+      "children": [],
+      "parent": "30",
+      "isSkippable": true,
+      "land_before": 1
+    },
+    {
+      "id": "35",
+      "type": "DTMF",
+      "value": "any",
+      "children": [],
+      "parent": null,
+      "isSkippable": true,
+      "land_before": 1
+    },
+    {
+      "id": "36",
+      "type": "Check",
+      "value": "failure",
+      "children": [],
+      "parent": null,
+      "isSkippable": false,
+      "land_before": 1
+    },
+    {
+      "id": "37",
+      "type": "Navigation",
+      "value": "successub",
+      "children": [
+        "41"
+      ],
+      "parent": "27",
+      "isSkippable": true,
+      "land_before": 0
+    },
+    {
+      "id": "38",
+      "type": "Navigation",
+      "value": "",
+      "children": [
+        "41"
+      ],
+      "parent": "27",
+      "isSkippable": true,
+      "land_before": 0
     },
     {
       "id": "39",
@@ -381,12 +418,10 @@ SET path_finder_json = ' {
     },
     {
       "id": "40",
-      "type": "Wait",
-      "value": "",
-      "children": [
-        "41"
-      ],
-      "parent": "58",
+      "type": "Check",
+      "value": "failure",
+      "children": [],
+      "parent": null,
       "isSkippable": false,
       "land_before": 1
     },
@@ -410,112 +445,27 @@ SET path_finder_json = ' {
     },
     {
       "id": "43",
-      "type": "Check",
-      "value": "failure",
+      "type": "DTMF",
+      "value": "any",
       "children": [],
       "parent": null,
-      "isSkippable": false,
+      "isSkippable": true,
       "land_before": 1
     },
     {
       "id": "44",
       "type": "Navigation",
-      "value": "successub",
+      "value": "dailymenu",
       "children": [
-        "50"
+        "15",
+        "14"
       ],
-      "parent": "33",
+      "parent": "10",
       "isSkippable": true,
       "land_before": 0
     },
     {
       "id": "45",
-      "type": "Navigation",
-      "value": "",
-      "children": [
-        "50"
-      ],
-      "parent": "33",
-      "isSkippable": true,
-      "land_before": 0
-    },
-    {
-      "id": "46",
-      "type": "Check",
-      "value": "success",
-      "children": [],
-      "parent": null,
-      "isSkippable": false,
-      "land_before": 1
-    },
-    {
-      "id": "47",
-      "type": "Check",
-      "value": "failure",
-      "children": [],
-      "parent": null,
-      "isSkippable": false,
-      "land_before": 1
-    },
-    {
-      "id": "48",
-      "type": "Check",
-      "value": "success",
-      "children": [],
-      "parent": null,
-      "isSkippable": false,
-      "land_before": 1
-    },
-    {
-      "id": "49",
-      "type": "Check",
-      "value": "failure",
-      "children": [],
-      "parent": null,
-      "isSkippable": false,
-      "land_before": 1
-    },
-    {
-      "id": "50",
-      "type": "Exit",
-      "value": "",
-      "children": [],
-      "parent": "44",
-      "isSkippable": true,
-      "land_before": 1
-    },
-    {
-      "id": "51",
-      "type": "DTMF",
-      "value": "any",
-      "children": [],
-      "parent": null,
-      "isSkippable": true,
-      "land_before": 1
-    },
-    {
-      "id": "52",
-      "type": "DTMF",
-      "value": "any",
-      "children": [],
-      "parent": null,
-      "isSkippable": true,
-      "land_before": 1
-    },
-    {
-      "id": "53",
-      "type": "Navigation",
-      "value": "dailymenu",
-      "children": [
-        "18",
-        "17"
-      ],
-      "parent": "11",
-      "isSkippable": true,
-      "land_before": 0
-    },
-    {
-      "id": "54",
       "type": "DTMF",
       "value": "1",
       "children": [],
@@ -524,7 +474,7 @@ SET path_finder_json = ' {
       "land_before": 1
     },
     {
-      "id": "55",
+      "id": "46",
       "type": "Processing",
       "value": "",
       "children": [],
@@ -533,7 +483,7 @@ SET path_finder_json = ' {
       "land_before": 1
     },
     {
-      "id": "56",
+      "id": "47",
       "type": "Processing",
       "value": "setsmartivrenabledflag",
       "children": [
@@ -544,7 +494,7 @@ SET path_finder_json = ' {
       "land_before": 1
     },
     {
-      "id": "57",
+      "id": "48",
       "type": "DTMF",
       "value": "any",
       "children": [],
@@ -553,18 +503,18 @@ SET path_finder_json = ' {
       "land_before": 1
     },
     {
-      "id": "58",
+      "id": "49",
       "type": "Patch",
       "value": "",
       "children": [
-        "40"
+        "33"
       ],
-      "parent": "37",
+      "parent": "30",
       "isSkippable": false,
       "land_before": 1
     },
     {
-      "id": "59",
+      "id": "50",
       "type": "DTMF",
       "value": "any",
       "children": [],

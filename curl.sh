@@ -4,11 +4,11 @@
 url="https://uaenorth.stt.speech.microsoft.com/speech/recognition/conversation/cognitiveservices/v1?format=detailed&language=fa-IR"
 
 # Define the subscription key and region
-subscription_key="7yAOU8Ce9WpRZnuBSBCKtnptzwRsgBwC41dZIFmKRSn34nc4A85xJQQJ99BIACF24P"
+subscription_key="7yAOU8Ce9WpRZnuBSBCKtnptzwRsgBwC41dZIFmKRSn34nc4A85xJQQJ99BIACF24PCXJ3w3AAAYACOGvMSy"
 subscription_region="uaenorth"
 
 # Define the path to the WAV file
-wav_file="/data/filestore/services/template/Prompts/qreeting_VOICEPROMPT_faIR.wav"
+wav_file="/data/filestore/services/template/Prompts/greeting_VOICEPROMPT_faIR.wav"
 
 # Check if the WAV file exists
 if [[ ! -f "$wav_file" ]]; then

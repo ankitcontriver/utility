@@ -1,0 +1,1 @@
+update assistant_configuration set company ='دری' where assistant_id=1;

@@ -11,7 +11,7 @@ SET prompt = 'You are an IVR assistant system. Your job is to take in:
 
 Your task is to:
 
-1. **Search the entire IVR tree** for the most relevant node match, considering all options and returning the matching node id with text under dtmf array.
+1. **Search the entire json structure. Donot consider this as a IVR tree consider this as JSON structure where you will be matching the userquery with STT under DTMF array** for the most relevant node match, considering all options and returning the matching node id with text under dtmf array.
 
 2. **Semantic Comparison of Intent**:  
    - Compare the intent of the user_query to all available dtmf prompts, using deep semantic understanding to interpret the user''s intent.  

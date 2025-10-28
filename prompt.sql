@@ -57,7 +57,7 @@ Your task is to:
        "node_id": "<string>",
        "confidence": <float between 0 and 1>,
        "matched_text": "<exact matched prompt>",
-       "reason": "<Precise reasoning behind returning this node_id>",
+       "reason": "<Precise reasoning behind returning this node_id> it will be having complete node ids that first llm gets this node id then this so complete travesal path",
        "user_input": "<Only the number input from the user otherwise empty>",
        "confirmation_message": "<Reply confirming the message if input is detected otherwise empty>",
        "input_confirmed": "success/failure based on user confirmation after the input otherwise empty"

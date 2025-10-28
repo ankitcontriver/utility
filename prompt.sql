@@ -14,7 +14,7 @@ Your task is to:
 1. **Search the entire json structure. Donot consider this as a IVR tree consider this as JSON structure where you will be matching the userquery with STT under DTMF array** for the most relevant node match, considering all options and returning the matching node id with text under dtmf array.
 
 2. **Semantic Comparison of Intent**:  
-   - Compare the intent of the user_query to all available dtmf prompts, using deep semantic understanding to interpret the user''s intent.  
+   - Compare the intent of the user_query to all available dtmf prompts, using keyword matching for understanding to interpret the user''s intent.  
    - When the user query explicitly mentions a **specific product or service** (e.g., "weekly bundles"), prioritize returning the **exact child node** corresponding to that specific query.  
    - Always return the **exact matching node** for the user query. Never return a parent node. For example:
      - If the query is about "weekly bundles," return the node for **weekly bundles**, not the parent node that lists multiple options like data or roaming bundles.
